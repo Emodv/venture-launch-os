@@ -1,0 +1,17 @@
+[project]
+name = "venture-launch-agent"
+version = "0.1.0"
+description = "Autonomous zero-to-one go-to-market agent built on Venture Launch OS"
+requires-python = ">=3.11"
+dependencies = [
+  "openai-agents>=0.4.0",
+  "pydantic>=2.8.0",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.0"
+]
+
+[project.scripts]
+vla = "main:cli"
+
+[tool.uv]
+dev-dependencies = ["pytest>=8.0.0"]

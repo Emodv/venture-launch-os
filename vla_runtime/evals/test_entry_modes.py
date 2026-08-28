@@ -1,5 +1,5 @@
 from main import LaunchRequest, state_from_request
-from agent import looks_like_url, normalized_url
+from agent import LaunchAnalysis, looks_like_url, merge_analysis, normalized_url
 
 
 def test_detects_existing_business_url() -> None:
@@ -30,3 +30,27 @@ def test_explicit_mode_overrides_auto_detection() -> None:
 def test_normalizes_url() -> None:
     assert normalized_url("example.com") == "https://example.com"
     assert normalized_url("https://example.com") == "https://example.com"
+
+
+def test_existing_business_mode_cannot_be_downgraded_by_model_default() -> None:
+    state = state_from_request(LaunchRequest(input="https://example.com"))
+    analysis = LaunchAnalysis(
+        entry_mode="greenfield",
+        status="audited",
+        thesis={},
+        icp={},
+        market={},
+        offer={},
+        economics={},
+        gtm={},
+        public_site_audit={"status": "complete"},
+        data_access={"ga4": "requested"},
+        preservation_map={"historical_data": "unverified"},
+        transformation_strategy={"path": "progressive_modernization"},
+        ai_agent_readiness={"score": 40},
+        current_bottleneck="first-party data access",
+        top_priorities=[],
+    )
+    merged = merge_analysis(state, analysis)
+    assert merged.entry_mode == "existing_business"
+    assert merged.website_url == "https://example.com"

@@ -128,6 +128,7 @@ async def analyze_venture(state: VentureState) -> LaunchAnalysis:
         prompt = f"""
 Transform this existing business using Venture Launch OS Mode B.
 Website URL: {state.website_url}
+Set entry_mode to exactly "existing_business" and website_url to exactly "{state.website_url}".
 
 Perform the public-site/public-web audit now. Do not pretend to have private GA4, Search Console, Google Business Profile, Google Ads, Merchant Center, CRM, or revenue data.
 
@@ -142,6 +143,7 @@ Return a structured first-pass transformation analysis that includes:
     else:
         prompt = (
             "Launch this venture using Venture Launch OS Mode A. "
+            "Set entry_mode to exactly 'greenfield'. "
             "Treat the following as the founder's casual idea statement:\n\n" + state.idea
         )
 
@@ -150,7 +152,10 @@ Return a structured first-pass transformation analysis that includes:
 
 
 def merge_analysis(state: VentureState, analysis: LaunchAnalysis) -> VentureState:
-    state.entry_mode = analysis.entry_mode if analysis.entry_mode in {"greenfield", "existing_business"} else state.entry_mode
+    # Entry mode is determined by deterministic request routing. Model output must not
+    # downgrade an existing-business transformation back to greenfield.
+    if state.entry_mode != "existing_business" and analysis.entry_mode == "existing_business":
+        state.entry_mode = "existing_business"
     state.website_url = analysis.website_url or state.website_url
     state.status = analysis.status
     state.thesis = analysis.thesis

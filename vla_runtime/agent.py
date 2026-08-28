@@ -79,24 +79,34 @@ For MODE B:
 4. Request only relevant products, typically: Google Analytics 4, Google Search Console, Google Business Profile, Google Ads, Merchant Center, and other first-party sources when applicable.
 5. Explain why access matters: identify winning landing pages, queries, conversions, traffic sources, rankings, CTR opportunities, local visibility, revenue signals, and pages that must be preserved during migration.
 6. Build a PRESERVATION MAP. Until first-party data is connected, mark historical SEO/conversion conclusions as UNVERIFIED and list what must be confirmed.
-7. After data is available, prioritize opportunities such as:
-   - high-impression / low-CTR queries and pages
-   - positions roughly 4–20 with realistic upside
-   - pages already producing organic leads or revenue
-   - topics/services with proven demand that deserve stronger supporting pages
-   - high-traffic landing pages with weak conversion
-   - local/service-area expansion supported by real demand
+7. Before large keyword research or content planning, build an AUDIENCE MAP. Do not organize SEO around raw keyword volume first.
+8. Rank commercially meaningful audience segments using:
+   - business value
+   - search demand
+   - ranking attainability / difficulty
+   Refine with conversion evidence when reliable first-party data exists.
+9. Do not let a massive low-value audience outrank a smaller high-value audience solely because search volume is larger.
+10. Run the SEO/content gap analysis against the priority audience: what pages, answers, comparisons, proof, tools, or decision support does that audience need that the site does not adequately own?
+11. After data is available, prioritize opportunities such as:
+   - high-impression / low-CTR queries and pages inside priority audiences
+   - positions roughly 4–20 with realistic upside and strong business fit
+   - pages already producing qualified organic leads or revenue
+   - smaller topics/services with disproportionate conversion quality
+   - high-traffic landing pages with weak conversion or poor audience fit
+   - underserved high-value audience segments
    - decaying pages or lost queries worth recovering
-8. Choose one transformation path:
+12. Explicitly identify high-volume audiences/keywords that should NOT be chased because business value or fit is weak.
+13. Use the same audience map for AEO and digital PR: target the questions, prompts, publications, research topics, and authority environments that influence the priority audience.
+14. Choose one transformation path:
    A. upgrade in place
    B. progressive modernization
    C. controlled rebuild + migration
    Base the decision on business value, technical constraints, SEO risk, speed, cost, and maintainability.
-9. If rebuilding, preserve valuable URLs where possible; otherwise create deliberate 301 redirect mappings. Preserve canonicals, metadata intent, internal-link equity, structured data, analytics, conversion events, and high-value content.
-10. Upgrade the site through the AI-Native Website Optimization stack:
-   SEO foundation -> entity/schema clarity -> AEO/content authority -> machine discovery -> API/CLI/OpenAPI -> MCP where useful -> WebMCP where useful -> measurement.
-11. Never call a site AI-agent ready merely because llms.txt exists. Agent readiness requires truthful machine-readable information and verified agent-operable actions where applicable.
-12. Never claim GA4/Search Console/Ads/GBP data was reviewed unless the corresponding authorized data was actually available.
+15. If rebuilding, preserve valuable URLs where possible; otherwise create deliberate 301 redirect mappings. Preserve canonicals, metadata intent, internal-link equity, structured data, analytics, conversion events, and high-value content.
+16. Upgrade the site through the AI-Native Website Optimization stack:
+   Audience map -> SEO foundation -> entity/schema clarity -> AEO/content authority -> machine discovery -> API/CLI/OpenAPI -> MCP where useful -> WebMCP where useful -> measurement.
+17. Never call a site AI-agent ready merely because llms.txt exists. Agent readiness requires truthful machine-readable information and verified agent-operable actions where applicable.
+18. Never claim GA4/Search Console/Ads/GBP data was reviewed unless the corresponding authorized data was actually available.
 
 GENERAL RULES
 - Use web search for current market, competitor, pricing, regulatory, and public-site evidence when useful.
@@ -138,12 +148,14 @@ Return a structured first-pass transformation analysis that includes:
 - preservation_map: public assets already visible plus historical assets/data that must be verified before migration
 - transformation_strategy: upgrade_in_place, progressive_modernization, or controlled_rebuild, with rationale and confidence
 - ai_agent_readiness: SEO/AEO/schema/LLM discovery/API-CLI/MCP/WebMCP gaps and highest-value next improvements
+- in market/gtm, include an audience-first plan: priority audience segments, business value, demand, attainability, what NOT to chase, and audience/content gaps
 - no more than three priorities
 """
     else:
         prompt = (
             "Launch this venture using Venture Launch OS Mode A. "
             "Set entry_mode to exactly 'greenfield'. "
+            "Before keyword research, define commercially meaningful audience segments, rank them by business value, search demand and attainability, and build SEO/AEO around the highest-value audience rather than raw keyword volume. "
             "Treat the following as the founder's casual idea statement:\n\n" + state.idea
         )
 

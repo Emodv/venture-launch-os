@@ -1,7 +1,7 @@
 [project]
 name = "venture-launch-agent"
-version = "0.1.0"
-description = "Autonomous zero-to-one go-to-market agent built on Venture Launch OS"
+version = "0.2.0"
+description = "Autonomous venture launch and existing-business AI-native transformation agent built on Venture Launch OS"
 requires-python = ">=3.11"
 dependencies = [
   "openai-agents>=0.4.0",

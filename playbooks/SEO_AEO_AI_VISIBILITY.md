@@ -4,11 +4,28 @@
 Create factual, crawlable, useful content that can rank in search, participate in generative search, and be cited or understood by AI answer engines.
 
 For the full website modernization process, use `playbooks/AI_NATIVE_WEBSITE_OPTIMIZATION.md`.
+For audience prioritization, use `playbooks/AUDIENCE_FIRST_SEO.md`.
 
 ## Operating principle
 SEO remains the foundation. AEO/GEO extends the objective from ranking and clicks toward retrieval, grounding, citation, and qualified discovery.
 
 Do not replace foundational SEO with speculative AI hacks.
+Do not start with keyword volume. Start with commercially meaningful audience segments, then size search demand and opportunity within those segments.
+
+## 0. Audience-first prioritization
+Before large-scale keyword research, define and rank audience segments.
+
+Use three primary dimensions:
+
+1. business value
+2. search demand
+3. ranking attainability / difficulty
+
+When reliable first-party conversion data exists, include conversion evidence as a refining factor.
+
+A smaller, high-value audience should outrank a massive low-value segment when the expected economic outcome is stronger.
+
+For each SEO/AEO roadmap, explicitly state which high-volume audiences/keywords will NOT be prioritized and why.
 
 ## 1. Establish entity clarity
 Publish consistent facts for:
@@ -42,9 +59,11 @@ Verify in production:
 - Search Console/Bing Webmaster diagnostics when access exists
 
 ## 3. Content authority architecture
+Build the content architecture around priority audiences, not a generic keyword list.
+
 Prioritize:
 
-1. Core service/product pages.
+1. Core service/product pages for the highest-value audience segments.
 2. Entity/About information.
 3. How It Works / mechanism.
 4. Pricing/decision guides where appropriate.
@@ -56,7 +75,21 @@ Prioritize:
 
 Avoid thin doorway pages, scaled filler, and near-duplicate query pages.
 
-## 4. AEO / citation readiness
+## 4. Audience gap analysis
+Run content/search gaps against the priority audience.
+
+Ask:
+
+- What does this audience need to know before buying?
+- Which questions/queries/prompts do they use?
+- Which high-value needs do competitors answer better?
+- Which existing pages already have authority but need improvement?
+- Which proof, comparisons, tools, or decision support are missing?
+- Which pages get traffic from the wrong audience?
+
+Prefer filling high-value audience gaps over copying every competitor keyword.
+
+## 5. AEO / citation readiness
 Make important pages easy to retrieve and cite accurately by including, where useful:
 
 - direct answers
@@ -71,7 +104,9 @@ Make important pages easy to retrieve and cite accurately by including, where us
 
 Write for humans first. Clear structure also improves machine extraction.
 
-## 5. Structured data
+Apply AEO to the questions and prompts used by priority audience segments. Do not create generic prompt-targeting pages disconnected from business value.
+
+## 6. Structured data
 Use only schema supported by visible facts, such as:
 
 - Organization / LocalBusiness
@@ -87,7 +122,7 @@ Do not manufacture reviews, ratings, certifications, locations, offers, inventor
 
 Q&A/FAQ content can still be useful, but do not treat `FAQPage` markup as a special Google visibility tactic; Google deprecated FAQ rich results in 2026.
 
-## 6. AI discovery layer
+## 7. AI discovery layer
 Use `templates/AI_DISCOVERY_TEMPLATE.md` and `playbooks/AI_NATIVE_WEBSITE_OPTIMIZATION.md`.
 
 Possible compatibility assets include:
@@ -103,7 +138,7 @@ Possible compatibility assets include:
 
 These are compatibility surfaces, not guaranteed ranking factors. Google Search explicitly does not require `llms.txt` for generative search visibility.
 
-## 7. Agent technology
+## 8. Agent technology
 For interactive/transactional sites, assess:
 
 - OpenAPI
@@ -116,8 +151,8 @@ Use `playbooks/AI_AGENT_READINESS_WEBMCP.md` for WebMCP implementation and safet
 
 The goal is to make the business increasingly machine-operable without bypassing authentication, authorization, confirmation, or existing business safeguards.
 
-## 8. Citation-worthy assets
-Build assets worth referencing:
+## 9. Citation-worthy assets
+Build assets worth referencing for the target audience:
 
 - original research
 - calculators
@@ -129,7 +164,24 @@ Build assets worth referencing:
 - checklists/process guides
 - evidence-backed case studies
 
-## 9. Off-page authority
+## 10. Audience map → digital PR
+Use the same priority-audience map to drive PR and authority building.
+
+Choose:
+
+- research topics
+- surveys
+- data stories
+- expert commentary
+- publications
+- journalists
+- industry partners
+
+based on whether they influence the priority audience.
+
+The objective is not generic backlinks. It is authority and distribution in the environments that shape the target audience's decisions.
+
+## 11. Off-page authority
 Prioritize:
 
 1. Google Business Profile where eligible.
@@ -142,16 +194,19 @@ Prioritize:
 
 Avoid PBNs, paid spam links, fake mentions, and mass directory blasts.
 
-## 10. Measurement
-Track:
+## 12. Measurement
+Track traffic and rankings by audience/segment where possible, not only sitewide totals.
 
 ### Search
 - indexed pages
 - organic impressions/clicks
 - non-brand queries
+- audience/segment traffic
+- qualified organic leads
+- conversion rate by landing page/segment
+- revenue/customer value by organic segment where attributable
 - local visibility
 - referring domains
-- organic leads/customers/revenue
 
 ### AI/AEO
 - generative-search impressions when available
@@ -160,8 +215,9 @@ Track:
 - grounding/retrieval queries where available
 - AI referral traffic
 - AI-assisted conversions
+- priority-audience prompt/citation coverage where observable
 
-Prefer first-party measurements such as Google Search Console generative-AI reporting and Bing Webmaster Tools AI Performance when available.
+Prefer first-party measurements such as Google Search Console and Bing Webmaster Tools when available.
 
 ### Agent interactions
 When API/MCP/WebMCP exists track:
@@ -171,5 +227,14 @@ When API/MCP/WebMCP exists track:
 - validation/auth errors
 - downstream leads/orders/revenue
 
+## Existing-business rule
+For Mode B transformations, do not finalize the SEO roadmap before requesting relevant first-party data access.
+
+Sequence:
+
+`public audit → first-party data → Preservation Map → Audience Map → demand sizing → audience gap analysis → roadmap/migration`
+
+Preserve URLs that generate valuable qualified traffic/conversion even when raw traffic is modest.
+
 ## Launch gate
-SEO/AEO/AI visibility work is not complete until production URLs, structured assets, critical pages, and applicable agent interfaces are tested live and revenue attribution exists.
+SEO/AEO/AI visibility work is not complete until production URLs, structured assets, critical pages, applicable agent interfaces, and audience/economic measurement are tested live.

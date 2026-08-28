@@ -80,33 +80,39 @@ For MODE B:
 5. Explain why access matters: identify winning landing pages, queries, conversions, traffic sources, rankings, CTR opportunities, local visibility, revenue signals, and pages that must be preserved during migration.
 6. Build a PRESERVATION MAP. Until first-party data is connected, mark historical SEO/conversion conclusions as UNVERIFIED and list what must be confirmed.
 7. Before large keyword research or content planning, build an AUDIENCE MAP. Do not organize SEO around raw keyword volume first.
-8. Rank commercially meaningful audience segments using:
-   - business value
-   - search demand
-   - ranking attainability / difficulty
-   Refine with conversion evidence when reliable first-party data exists.
+8. Rank commercially meaningful audience segments using business value, search demand, and ranking attainability/difficulty. Refine with conversion evidence when reliable first-party data exists.
 9. Do not let a massive low-value audience outrank a smaller high-value audience solely because search volume is larger.
-10. Run the SEO/content gap analysis against the priority audience: what pages, answers, comparisons, proof, tools, or decision support does that audience need that the site does not adequately own?
-11. After data is available, prioritize opportunities such as:
+10. For each priority audience/topic, build a PROMPT/TOPIC FAN-OUT instead of targeting one head term. Include relevant definitions, comparisons, alternatives, cost, fit, implementation, risk, proof, geography, use-case, freshness, and decision modifiers.
+11. Classify important prompts as CLICK-DEPENDENT, CITATION-FIRST, or HYBRID based on whether an AI answer can plausibly satisfy the user without a click.
+12. For CITATION-FIRST prompts, optimize for brand mention, citation, inclusion, and recommendation context rather than judging success only by CTR.
+13. Run the SEO/AEO gap analysis against the priority audience + prompt graph: what pages, answers, comparisons, proof, tools, or decision support does that audience need that the site does not adequately own?
+14. Run a BRAND/CITATION GAP: identify prompts and credible third-party environments where competitors are present/mentioned but the brand is absent.
+15. Evaluate AEO citation readiness using three planning levers: CONSENSUS, FRESHNESS, and AUTHORITY. Treat these as heuristics, not guarantees.
+16. Structure important answer content for reuse: BLUF when appropriate, atomic sections, descriptive headings, explicit entities, simple declarative sentences, lists/tables, evidence, limitations, and numbers with timeframe/context.
+17. Use the same audience + prompt graph for off-site authority: relevant editorial publications, communities, partners, YouTube, podcasts, and research/data assets. Do not manufacture mentions or spam UGC.
+18. Audit robots/CDN/WAF rules for accidental blocking of relevant search/AI crawlers. Before changing production crawler policy, verify current official crawler documentation and the owner's content-use preferences. Never weaken security just to allow bots.
+19. After data is available, prioritize opportunities such as:
    - high-impression / low-CTR queries and pages inside priority audiences
    - positions roughly 4–20 with realistic upside and strong business fit
    - pages already producing qualified organic leads or revenue
    - smaller topics/services with disproportionate conversion quality
    - high-traffic landing pages with weak conversion or poor audience fit
    - underserved high-value audience segments
+   - citation gaps around high-value prompts
+   - stale high-authority pages that need substantive refresh
    - decaying pages or lost queries worth recovering
-12. Explicitly identify high-volume audiences/keywords that should NOT be chased because business value or fit is weak.
-13. Use the same audience map for AEO and digital PR: target the questions, prompts, publications, research topics, and authority environments that influence the priority audience.
-14. Choose one transformation path:
+20. Explicitly identify high-volume audiences/keywords that should NOT be chased because business value or fit is weak.
+21. Choose one transformation path:
    A. upgrade in place
    B. progressive modernization
    C. controlled rebuild + migration
    Base the decision on business value, technical constraints, SEO risk, speed, cost, and maintainability.
-15. If rebuilding, preserve valuable URLs where possible; otherwise create deliberate 301 redirect mappings. Preserve canonicals, metadata intent, internal-link equity, structured data, analytics, conversion events, and high-value content.
-16. Upgrade the site through the AI-Native Website Optimization stack:
-   Audience map -> SEO foundation -> entity/schema clarity -> AEO/content authority -> machine discovery -> API/CLI/OpenAPI -> MCP where useful -> WebMCP where useful -> measurement.
-17. Never call a site AI-agent ready merely because llms.txt exists. Agent readiness requires truthful machine-readable information and verified agent-operable actions where applicable.
-18. Never claim GA4/Search Console/Ads/GBP data was reviewed unless the corresponding authorized data was actually available.
+22. If rebuilding, preserve valuable URLs where possible; otherwise create deliberate 301 redirect mappings. Preserve canonicals, metadata intent, internal-link equity, structured data, analytics, conversion events, and high-value content.
+23. Upgrade the site through the AI-Native Website Optimization stack:
+   Audience Map -> Prompt Fan-Out -> SEO foundation -> entity/schema clarity -> AEO/citation engine -> machine discovery -> API/CLI/OpenAPI -> MCP where useful -> WebMCP where useful -> measurement.
+24. Never call a site AI-agent ready merely because llms.txt exists. Agent readiness requires truthful machine-readable information and verified agent-operable actions where applicable.
+25. Never claim GA4/Search Console/Ads/GBP data was reviewed unless the corresponding authorized data was actually available.
+26. Track AI visibility separately from SEO: observable brand mentions, cited URLs, competitor citation share where measurable, AI referrals, self-reported AI attribution, and crawler activity. Bot visits are not proof of citation.
 
 GENERAL RULES
 - Use web search for current market, competitor, pricing, regulatory, and public-site evidence when useful.
@@ -148,14 +154,16 @@ Return a structured first-pass transformation analysis that includes:
 - preservation_map: public assets already visible plus historical assets/data that must be verified before migration
 - transformation_strategy: upgrade_in_place, progressive_modernization, or controlled_rebuild, with rationale and confidence
 - ai_agent_readiness: SEO/AEO/schema/LLM discovery/API-CLI/MCP/WebMCP gaps and highest-value next improvements
-- in market/gtm, include an audience-first plan: priority audience segments, business value, demand, attainability, what NOT to chase, and audience/content gaps
+- in market/gtm, include an audience-first plan with priority audiences, business value, demand, attainability, what NOT to chase, and audience/content gaps
+- include a prompt/topic fan-out for the highest-value audience, classify major prompts as CLICK-DEPENDENT/CITATION-FIRST/HYBRID, identify likely citation/brand gaps, and assess consensus/freshness/authority weaknesses
 - no more than three priorities
 """
     else:
         prompt = (
             "Launch this venture using Venture Launch OS Mode A. "
             "Set entry_mode to exactly 'greenfield'. "
-            "Before keyword research, define commercially meaningful audience segments, rank them by business value, search demand and attainability, and build SEO/AEO around the highest-value audience rather than raw keyword volume. "
+            "Before keyword research, define commercially meaningful audience segments and rank them by business value, search demand and attainability. "
+            "For the highest-value audience, create a prompt/topic fan-out instead of targeting a single head term, classify major prompts as CLICK-DEPENDENT, CITATION-FIRST, or HYBRID, and build SEO/AEO around topic-wide relevance, citation readiness, and qualified business value. "
             "Treat the following as the founder's casual idea statement:\n\n" + state.idea
         )
 

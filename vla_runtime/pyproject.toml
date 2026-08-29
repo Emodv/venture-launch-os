@@ -1,6 +1,6 @@
 [project]
 name = "venture-launch-agent"
-version = "0.4.0"
+version = "0.5.0"
 description = "Autonomous venture launch, business-growth, and agent-economy operator built on Venture Launch OS"
 requires-python = ">=3.11"
 dependencies = [

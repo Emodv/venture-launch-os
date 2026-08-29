@@ -16,6 +16,7 @@ class Provider(str, Enum):
 class ProviderConfig:
     provider: Provider
     model_env: str
+    agent_model_env: str
     api_key_env: str
     base_url: str | None = None
     supports_tools: bool = True
@@ -26,28 +27,36 @@ class ProviderConfig:
     def model(self) -> str:
         return os.getenv(self.model_env, "").strip()
 
+    @property
+    def agent_model(self) -> str:
+        return os.getenv(self.agent_model_env, "").strip()
+
 
 DEFAULTS: dict[Provider, ProviderConfig] = {
     Provider.OPENAI: ProviderConfig(
         provider=Provider.OPENAI,
         model_env="VLA_OPENAI_MODEL",
+        agent_model_env="VLA_OPENAI_AGENT_MODEL",
         api_key_env="OPENAI_API_KEY",
         supports_remote_mcp=True,
     ),
     Provider.ANTHROPIC: ProviderConfig(
         provider=Provider.ANTHROPIC,
         model_env="VLA_ANTHROPIC_MODEL",
+        agent_model_env="VLA_ANTHROPIC_AGENT_MODEL",
         api_key_env="ANTHROPIC_API_KEY",
     ),
     Provider.GEMINI: ProviderConfig(
         provider=Provider.GEMINI,
         model_env="VLA_GEMINI_MODEL",
+        agent_model_env="VLA_GEMINI_AGENT_MODEL",
         api_key_env="GEMINI_API_KEY",
         supports_remote_mcp=True,
     ),
     Provider.XAI: ProviderConfig(
         provider=Provider.XAI,
         model_env="VLA_XAI_MODEL",
+        agent_model_env="VLA_XAI_AGENT_MODEL",
         api_key_env="XAI_API_KEY",
         base_url="https://api.x.ai/v1",
     ),
@@ -65,7 +74,10 @@ class ModelTask:
 
 def provider_available(provider: Provider) -> bool:
     config = DEFAULTS[provider]
-    return bool(os.getenv(config.api_key_env) and config.model)
+    has_key = bool(os.getenv(config.api_key_env))
+    if provider == Provider.OPENAI:
+        return has_key
+    return bool(has_key and config.agent_model)
 
 
 def eligible_providers(task: ModelTask, require_configuration: bool = True) -> list[Provider]:
@@ -88,7 +100,6 @@ def select_provider(
     preferred: Provider | None = None,
     require_configuration: bool = True,
 ) -> Provider:
-    """Select an eligible provider without coupling VLA doctrine to one model."""
     eligible = eligible_providers(task, require_configuration=require_configuration)
     if preferred is not None and preferred in eligible:
         return preferred
@@ -97,32 +108,51 @@ def select_provider(
     return eligible[0]
 
 
+def configured_primary_provider(require_configuration: bool = True) -> Provider:
+    requested = os.getenv("VLA_PROVIDER", "openai").strip().lower()
+    if requested == "auto":
+        return select_provider(
+            ModelTask(kind="vla_orchestration", requires_tools=True, requires_structured_output=True),
+            require_configuration=require_configuration,
+        )
+    try:
+        provider = Provider(requested)
+    except ValueError as exc:
+        raise RuntimeError(f"Unsupported VLA_PROVIDER: {requested}") from exc
+    if require_configuration and not provider_available(provider):
+        config = DEFAULTS[provider]
+        requirements = [config.api_key_env]
+        if provider != Provider.OPENAI:
+            requirements.append(config.agent_model_env)
+        raise RuntimeError(
+            f"Provider {provider.value} is not configured; check: {', '.join(requirements)}"
+        )
+    return provider
+
+
+def agent_model_id(provider: Provider) -> str | None:
+    config = DEFAULTS[provider]
+    if provider == Provider.OPENAI:
+        return config.agent_model or config.model or os.getenv("VLA_MODEL", "").strip() or None
+    return config.agent_model or None
+
+
 def model_descriptor(provider: Provider) -> dict[str, str | bool | None]:
     config = DEFAULTS[provider]
     return {
         "provider": config.provider.value,
         "model": config.model,
+        "agent_model": config.agent_model,
         "model_env": config.model_env,
+        "agent_model_env": config.agent_model_env,
         "api_key_env": config.api_key_env,
         "base_url": config.base_url,
         "supports_tools": config.supports_tools,
         "supports_structured_output": config.supports_structured_output,
         "supports_remote_mcp": config.supports_remote_mcp,
+        "configured": provider_available(provider),
     }
 
 
 def provider_status() -> list[dict[str, str | bool | None]]:
-    """Return non-secret provider configuration status for diagnostics."""
-    rows: list[dict[str, str | bool | None]] = []
-    for provider, config in DEFAULTS.items():
-        rows.append(
-            {
-                "provider": provider.value,
-                "configured": provider_available(provider),
-                "model": config.model or None,
-                "supports_tools": config.supports_tools,
-                "supports_structured_output": config.supports_structured_output,
-                "supports_remote_mcp": config.supports_remote_mcp,
-            }
-        )
-    return rows
+    return [model_descriptor(provider) for provider in Provider]

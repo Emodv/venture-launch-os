@@ -88,12 +88,7 @@ def select_provider(
     preferred: Provider | None = None,
     require_configuration: bool = True,
 ) -> Provider:
-    """Select an eligible provider without coupling VLA doctrine to one model.
-
-    Provider/model names come from configuration so VLA never hard-codes speculative
-    future model IDs. Quality/cost/latency routing can later be supplied by the
-    model-evaluation registry while business policy remains stable.
-    """
+    """Select an eligible provider without coupling VLA doctrine to one model."""
     eligible = eligible_providers(task, require_configuration=require_configuration)
     if preferred is not None and preferred in eligible:
         return preferred
@@ -114,3 +109,20 @@ def model_descriptor(provider: Provider) -> dict[str, str | bool | None]:
         "supports_structured_output": config.supports_structured_output,
         "supports_remote_mcp": config.supports_remote_mcp,
     }
+
+
+def provider_status() -> list[dict[str, str | bool | None]]:
+    """Return non-secret provider configuration status for diagnostics."""
+    rows: list[dict[str, str | bool | None]] = []
+    for provider, config in DEFAULTS.items():
+        rows.append(
+            {
+                "provider": provider.value,
+                "configured": provider_available(provider),
+                "model": config.model or None,
+                "supports_tools": config.supports_tools,
+                "supports_structured_output": config.supports_structured_output,
+                "supports_remote_mcp": config.supports_remote_mcp,
+            }
+        )
+    return rows

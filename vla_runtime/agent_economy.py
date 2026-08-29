@@ -22,6 +22,25 @@ class PrincipalType(str, Enum):
     UNKNOWN = "unknown"
 
 
+class NegotiationDecision(str, Enum):
+    ALLOWED = "allowed"
+    APPROVAL_REQUIRED = "approval_required"
+    REJECTED = "rejected"
+
+
+VLA_AGENT_IDENTITY = {
+    "agent": "Venture Launch Agent",
+    "short_name": "VLA",
+    "role": "autonomous business-growth and agent-commerce operator",
+    "mission": (
+        "Help a business become discoverable, understandable, trustworthy, "
+        "recommendable, negotiable, and transactable by humans and AI agents."
+    ),
+    "privacy": "collect decision-relevant intent; avoid unnecessary principal identity",
+    "authority": "bounded by explicit business policy and approval rules",
+}
+
+
 @dataclass(frozen=True)
 class BuyerAgentContext:
     principal_type: PrincipalType = PrincipalType.UNKNOWN
@@ -47,12 +66,19 @@ class NegotiationPolicy:
     refund_policy_summary: str | None = None
     approval_required_below: float | None = None
 
-    def can_offer(self, proposed_price: float) -> bool:
+    def decision(self, proposed_price: float) -> NegotiationDecision:
         if self.minimum_price is not None and proposed_price < self.minimum_price:
-            return False
+            return NegotiationDecision.REJECTED
         if self.approval_required_below is not None and proposed_price < self.approval_required_below:
-            return False
-        return True
+            return NegotiationDecision.APPROVAL_REQUIRED
+        if self.list_price is not None and self.maximum_discount_pct >= 0:
+            autonomous_floor = self.list_price * (1 - self.maximum_discount_pct / 100)
+            if proposed_price < autonomous_floor:
+                return NegotiationDecision.APPROVAL_REQUIRED
+        return NegotiationDecision.ALLOWED
+
+    def can_offer(self, proposed_price: float) -> bool:
+        return self.decision(proposed_price) == NegotiationDecision.ALLOWED
 
 
 @dataclass(frozen=True)
@@ -114,7 +140,9 @@ def evaluate_fit(profile: BusinessAgentProfile, request: AgentCapabilityRequest)
     matched_geographies: list[str] = []
     if buyer.geography:
         matched_geographies = [
-            geo for geo in profile.geographies if buyer.geography.lower() in geo.lower() or geo.lower() in buyer.geography.lower()
+            geo
+            for geo in profile.geographies
+            if buyer.geography.lower() in geo.lower() or geo.lower() in buyer.geography.lower()
         ]
 
     objective = buyer.objective.lower()

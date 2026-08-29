@@ -38,6 +38,11 @@ class VentureState(BaseModel):
     transformation_strategy: dict[str, Any] = Field(default_factory=dict)
     ai_agent_readiness: dict[str, Any] = Field(default_factory=dict)
 
+    # Cross-venture historical intelligence. Private evidence is referenced by
+    # opaque IDs only; raw client data must not be stored in the public repo.
+    historical_benchmark_context: dict[str, Any] = Field(default_factory=dict)
+    comparable_case_ids: list[str] = Field(default_factory=list)
+
     blockers: list[dict[str, Any]] = Field(default_factory=list)
     approvals_required: list[dict[str, Any]] = Field(default_factory=list)
     current_bottleneck: str | None = None

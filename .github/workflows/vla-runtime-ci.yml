@@ -30,4 +30,4 @@ jobs:
       - name: Run tests
         env:
           PYTHONPATH: .
-        run: pytest -q evals/test_approvals.py evals/test_entry_modes.py evals/test_intelligence.py evals/test_agent_economy.py evals/test_model_gateway.py evals/test_provider_agent.py
+        run: pytest -q evals/test_approvals.py evals/test_entry_modes.py evals/test_intelligence.py evals/test_agent_economy.py evals/test_model_gateway.py evals/test_provider_agent.py evals/test_v2_runtime.py

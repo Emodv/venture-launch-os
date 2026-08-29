@@ -7,6 +7,7 @@ from agents import Agent, Runner, WebSearchTool, function_tool
 from pydantic import BaseModel, Field
 
 from approvals import classify_action
+from intelligence import knowledge_is_privacy_safe, sanitize_historical_knowledge
 from state import VentureState
 
 
@@ -73,15 +74,38 @@ The user provides an idea or business brief. Start from zero: validate problem/I
 MODE B — EXISTING BUSINESS TRANSFORMATION
 The user provides an existing business URL. Treat the current site and its historical search/conversion equity as assets, not disposable design material.
 
+PRIVACY-FIRST HISTORICAL INTELLIGENCE
+Historical client work is private source evidence, not reusable content.
+- Never expose or persist person names, client/company names, domains, emails, phone numbers, physical addresses, account/property/customer IDs, CRM IDs, source/message/file IDs, credentials, passwords, API keys, tokens, private URLs, or unique identifying combinations of facts.
+- Never quote NDA-protected correspondence into reusable/public knowledge.
+- Historical evidence may only contribute generalized business archetypes, patterns, decision rules, failure modes, outcome classes, safe benchmark ranges, confidence, and era/relevance labels.
+- If a pattern is unusually distinctive and could re-identify a client, generalize it further or omit it.
+- Raw/private evidence must never be committed to the public repository.
+- Privacy takes precedence over benchmark precision.
+
 HISTORICAL INTELLIGENCE
 VLA may receive private, anonymized benchmark evidence from historical client work. Treat that evidence as a decision-support layer, not ground truth.
-- Prefer comparable cases by industry, business model, geography, customer value, sales cycle, channel, audience intent, and local/national scope.
+- Prefer comparable cases by industry archetype, business model, geography class, customer value, sales cycle, channel, audience intent, and local/national scope.
 - Require evidence-quality and compatibility thresholds before using a case as benchmark support.
-- Never expose private client identity, source IDs, account IDs, emails, or confidential metrics.
 - State sample size and confidence for numeric benchmarks.
 - Separate VERIFIED, STRONGLY_SUPPORTED, INFERRED, and UNKNOWN attribution.
 - Never generalize from one client as if it were a universal law.
 - Use PPC-to-SEO transfer as a hypothesis: high-converting paid search terms may reveal organic/AEO opportunities, but channel behavior must still be verified.
+- Label historical lessons by era: LEGACY, TRANSITIONAL, CURRENT, or EXPERIMENTAL. Preserve enduring principles; re-validate platform-specific tactics before reuse.
+
+2027+ MARKETING OPERATING SYSTEM
+Optimize the customer's decision environment, not isolated channels.
+Use this chain: Audience -> Intent -> Prompt/Query Universe -> Discovery Surfaces -> Evidence/Authority -> Conversion -> Revenue -> Learning.
+- Keywords are one representation of intent, not the organizing principle.
+- Treat AI answer visibility, search visibility, paid media, local, video, communities, editorial authority, and owned properties as connected discovery surfaces.
+- Build entity clarity and recommendation context, not only rankings.
+- Use paid media as a rapid intent-testing engine; feed verified learning into SEO/AEO/content/landing pages.
+- Use SEO/AEO as compounding ownership of proven decision spaces.
+- Build content that is useful to humans and retrievable by machines: clear answers, atomic sections, explicit entities, evidence, limitations, comparisons, and current facts where appropriate.
+- Where commercially useful, make the business agent-operable through truthful structured data, APIs, OpenAPI, MCP, and browser/WebMCP-style actions with authentication, confirmation, and side-effect controls.
+- Never treat llms.txt, schema, crawler access, MCP, or any single tactic as a guaranteed AI ranking/citation mechanism.
+- Measure mentions/citations/referrals separately from crawler activity and separately from revenue.
+- Run controlled experiments and continuously update doctrine from verified outcomes.
 
 For MODE B:
 1. Inspect the public website and current web evidence. Determine what the business is, products/services, geography, conversion paths, site architecture, visible content, technical/search issues, schema/entity clarity, and AI-agent readiness.
@@ -124,7 +148,7 @@ For MODE B:
 24. Never call a site AI-agent ready merely because llms.txt exists. Agent readiness requires truthful machine-readable information and verified agent-operable actions where applicable.
 25. Never claim GA4/Search Console/Ads/GBP data was reviewed unless the corresponding authorized data was actually available.
 26. Track AI visibility separately from SEO: observable brand mentions, cited URLs, competitor citation share where measurable, AI referrals, self-reported AI attribution, and crawler activity. Bot visits are not proof of citation.
-27. When historical benchmark evidence is available, include a concise historical_benchmark_context describing comparable-case count, quality/confidence, reusable patterns, known failure modes, and which recommendations were influenced by prior evidence.
+27. When historical benchmark evidence is available, include a concise historical_benchmark_context describing comparable-case count, quality/confidence, reusable patterns, known failure modes, era/current-relevance, and which recommendations were influenced by prior evidence. Never include identifying client/source fields.
 
 GENERAL RULES
 - Use web search for current market, competitor, pricing, regulatory, and public-site evidence when useful.
@@ -154,11 +178,13 @@ async def analyze_venture(state: VentureState) -> LaunchAnalysis:
 
     benchmark_note = ""
     if state.historical_benchmark_context:
-        benchmark_note = (
-            "\nPrivate anonymized historical benchmark context is available in Venture State. "
-            "Use it conservatively, do not expose identities, and report sample size/confidence.\n"
-            + str(state.historical_benchmark_context)
-        )
+        safe_context = sanitize_historical_knowledge(state.historical_benchmark_context)
+        if knowledge_is_privacy_safe(safe_context):
+            benchmark_note = (
+                "\nPrivate anonymized historical benchmark context is available in Venture State. "
+                "Use it conservatively, never infer/reconstruct identity, and report sample size/confidence.\n"
+                + str(safe_context)
+            )
 
     if state.entry_mode == "existing_business":
         prompt = f"""
@@ -176,7 +202,7 @@ Return a structured first-pass transformation analysis that includes:
 - ai_agent_readiness: SEO/AEO/schema/LLM discovery/API-CLI/MCP/WebMCP gaps and highest-value next improvements
 - in market/gtm, include an audience-first plan with priority audiences, business value, demand, attainability, what NOT to chase, and audience/content gaps
 - include a prompt/topic fan-out for the highest-value audience, classify major prompts as CLICK-DEPENDENT/CITATION-FIRST/HYBRID, identify likely citation/brand gaps, and assess consensus/freshness/authority weaknesses
-- historical_benchmark_context when comparable private historical evidence exists
+- historical_benchmark_context when comparable privacy-safe historical evidence exists
 - no more than three priorities
 {benchmark_note}
 """
@@ -213,7 +239,9 @@ def merge_analysis(state: VentureState, analysis: LaunchAnalysis) -> VentureStat
     state.transformation_strategy = analysis.transformation_strategy
     state.ai_agent_readiness = analysis.ai_agent_readiness
     if analysis.historical_benchmark_context:
-        state.historical_benchmark_context = analysis.historical_benchmark_context
+        safe_context = sanitize_historical_knowledge(analysis.historical_benchmark_context)
+        if knowledge_is_privacy_safe(safe_context):
+            state.historical_benchmark_context = safe_context
     state.current_bottleneck = analysis.current_bottleneck
     state.top_priorities = [item.model_dump() for item in analysis.top_priorities]
     state.blockers = analysis.blockers

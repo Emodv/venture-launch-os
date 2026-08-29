@@ -38,10 +38,22 @@ class VentureState(BaseModel):
     transformation_strategy: dict[str, Any] = Field(default_factory=dict)
     ai_agent_readiness: dict[str, Any] = Field(default_factory=dict)
 
-    # Cross-venture historical intelligence. Private evidence is referenced by
-    # opaque IDs only; raw client data must not be stored in the public repo.
+    # Cross-venture historical intelligence. Raw client evidence is never stored here.
     historical_benchmark_context: dict[str, Any] = Field(default_factory=dict)
     comparable_case_ids: list[str] = Field(default_factory=list)
+
+    # VLA 2.0 autonomous operating state. These are VLA-owned abstractions and do not
+    # depend on a specific third-party agent framework.
+    pipeline_kind: str | None = None
+    pipeline_phase: str | None = None
+    specialist_team: dict[str, Any] = Field(default_factory=dict)
+    work_queue: list[dict[str, Any]] = Field(default_factory=list)
+    heartbeat_state: dict[str, Any] = Field(default_factory=dict)
+    model_routing: dict[str, Any] = Field(default_factory=dict)
+    integration_state: dict[str, Any] = Field(default_factory=dict)
+    experiments: list[dict[str, Any]] = Field(default_factory=list)
+    decision_memory: list[dict[str, Any]] = Field(default_factory=list)
+    outcome_memory: list[dict[str, Any]] = Field(default_factory=list)
 
     blockers: list[dict[str, Any]] = Field(default_factory=list)
     approvals_required: list[dict[str, Any]] = Field(default_factory=list)
@@ -61,4 +73,12 @@ class VentureState(BaseModel):
                 "evidence": evidence,
             }
         )
+        self.mark_updated()
+
+    def record_decision(self, decision: dict[str, Any]) -> None:
+        self.decision_memory.append({"timestamp": now_iso(), **decision})
+        self.mark_updated()
+
+    def record_outcome(self, outcome: dict[str, Any]) -> None:
+        self.outcome_memory.append({"timestamp": now_iso(), **outcome})
         self.mark_updated()

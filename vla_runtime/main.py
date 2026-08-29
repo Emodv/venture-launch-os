@@ -26,8 +26,10 @@ from model_gateway import provider_status
 from persistence import load_state, save_state
 from runtime_router import analyze_venture
 from state import VentureState
+from v2_api import bootstrap_v2_state, router as v2_router
 
-app = FastAPI(title="Venture Launch Agent", version="0.4.0")
+app = FastAPI(title="Venture Launch Agent", version="0.5.0")
+app.include_router(v2_router)
 
 
 class LaunchRequest(BaseModel):
@@ -117,26 +119,29 @@ def state_from_request(request: LaunchRequest) -> VentureState:
 
     if mode == "existing_business":
         url = normalized_url(request.input)
-        return VentureState(
-            idea=f"Transform existing business website: {url}",
-            entry_mode="existing_business",
-            website_url=url,
-            status="audit_pending",
+        return bootstrap_v2_state(
+            VentureState(
+                idea=f"Transform existing business website: {url}",
+                entry_mode="existing_business",
+                website_url=url,
+                status="audit_pending",
+            )
         )
 
-    return VentureState(idea=request.input, entry_mode="greenfield", status="discovery")
+    return bootstrap_v2_state(VentureState(idea=request.input, entry_mode="greenfield", status="discovery"))
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "vla", "version": "0.4.0"}
+    return {"status": "ok", "service": "vla", "version": "0.5.0"}
 
 
 @app.get("/agent")
 def agent_identity() -> dict:
     return {
         **VLA_AGENT_IDENTITY,
-        "version": "0.4.0",
+        "version": "0.5.0",
+        "architecture": "persistent VLA director + governed specialist agents + replaceable model providers",
         "journey_stages": [stage.value for stage in AgentJourneyStage],
         "providers": provider_status(),
     }
@@ -200,7 +205,7 @@ def agent_negotiate(request: NegotiationRequest) -> dict:
 async def create_venture(request: LaunchRequest) -> dict:
     state = state_from_request(request)
     analysis = await analyze_venture(state)
-    merged = merge_analysis(state, analysis)
+    merged = bootstrap_v2_state(merge_analysis(state, analysis))
     save_state(merged, os.getenv("VLA_STATE_DIR", "./data/ventures"))
     return merged.model_dump()
 
@@ -208,14 +213,16 @@ async def create_venture(request: LaunchRequest) -> dict:
 @app.post("/transform")
 async def transform_existing_business(request: ExistingBusinessRequest) -> dict:
     url = normalized_url(request.url)
-    state = VentureState(
-        idea=f"Transform existing business website: {url}",
-        entry_mode="existing_business",
-        website_url=url,
-        status="audit_pending",
+    state = bootstrap_v2_state(
+        VentureState(
+            idea=f"Transform existing business website: {url}",
+            entry_mode="existing_business",
+            website_url=url,
+            status="audit_pending",
+        )
     )
     analysis = await analyze_venture(state)
-    merged = merge_analysis(state, analysis)
+    merged = bootstrap_v2_state(merge_analysis(state, analysis))
     save_state(merged, os.getenv("VLA_STATE_DIR", "./data/ventures"))
     return merged.model_dump()
 
@@ -235,8 +242,9 @@ async def resume_venture(venture_id: str) -> dict:
         state = load_state(venture_id, os.getenv("VLA_STATE_DIR", "./data/ventures"))
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail="venture not found") from exc
+    state = bootstrap_v2_state(state)
     analysis = await analyze_venture(state)
-    merged = merge_analysis(state, analysis)
+    merged = bootstrap_v2_state(merge_analysis(state, analysis))
     save_state(merged, os.getenv("VLA_STATE_DIR", "./data/ventures"))
     return merged.model_dump()
 
@@ -245,13 +253,13 @@ async def run_cli(value: str, mode: str = "auto") -> None:
     request = LaunchRequest(input=value, mode=mode)
     state = state_from_request(request)
     analysis = await analyze_venture(state)
-    merged = merge_analysis(state, analysis)
+    merged = bootstrap_v2_state(merge_analysis(state, analysis))
     path = save_state(merged, os.getenv("VLA_STATE_DIR", "./data/ventures"))
     print(json.dumps({"venture_id": merged.venture_id, "state_path": path, "state": merged.model_dump()}, indent=2))
 
 
 def cli() -> None:
-    parser = argparse.ArgumentParser(description="Venture Launch Agent v0.4")
+    parser = argparse.ArgumentParser(description="Venture Launch Agent v0.5")
     parser.add_argument("input", help="Plain-English business idea OR existing business URL")
     parser.add_argument(
         "--mode",

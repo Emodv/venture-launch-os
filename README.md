@@ -2,17 +2,21 @@
 
 ## Venture Launch OS
 
-Venture Launch OS is the autonomous zero-to-one go-to-market operating system for turning a raw business idea into a **live, measurable, revenue-ready operating business**.
+Venture Launch OS is the autonomous zero-to-one and growth operating system for turning a raw business idea—or an existing business—into a **live, measurable, customer-acquiring, agent-ready operating business**.
 
 It covers:
 
-**idea → validation → business model → unit economics → name/domain → brand → repo → backend → mobile-first website → conversion funnel → content authority → SEO/AEO/AI discovery → analytics → deployment → CRM/payments → GTM → first customer → fulfillment → learning → automation → scale**
+**idea/existing business → validation/audit → business model → unit economics → preservation → audience intelligence → offer → brand/domain → repo/backend → mobile-first website → conversion funnel → SEO/AEO/AI Agent Optimization → analytics → deployment → CRM/payments → GTM → first customer → fulfillment → learning → automation → scale**
 
 ## Venture Launch Agent (VLA)
 
-VLA is the autonomous execution layer built on Venture Launch OS.
+VLA is the persistent autonomous AI agent that executes Venture Launch OS.
 
-Its goal is not merely to build a website. Its primary objective is to minimize:
+VLA owns its mission, Venture State, decision policy, privacy rules, business permissions, agent-to-agent contract, and learning loop. OpenAI, Claude, Gemini, Grok, and future model providers are replaceable intelligence substrates beneath VLA.
+
+**Persistent VLA, replaceable models.**
+
+Its primary objective is to minimize:
 
 1. time to first qualified opportunity
 2. time to first paying customer
@@ -22,12 +26,60 @@ A user should eventually need to say only:
 
 > I have an idea: [plain-English business idea]. Launch it.
 
-VLA translates that conversation into structured execution, maintains persistent Venture State, uses connected tools, launches the venture, begins acquisition, measures outcomes, learns, and escalates only genuine blockers or high-risk decisions.
+or:
 
-See:
+> Here is the company: [URL]. Grow it.
 
-- `VLA.md` — Venture Launch Agent product and operating specification
-- `templates/VENTURE_STATE_SCHEMA.md` — persistent venture memory/state model
+VLA translates that into structured execution, maintains persistent Venture State, uses connected tools, launches/transforms the venture, begins acquisition, measures outcomes, learns, and escalates only genuine blockers or high-risk decisions.
+
+## VLA in the agent economy
+
+VLA helps a business become:
+
+**discoverable → understandable → trustworthy → recommendable → negotiable → transactable**
+
+It is designed for both:
+
+- human buyers; and
+- AI agents acting for human or organizational principals.
+
+VLA's AI Agent Optimization (AAO) layer makes business information and actions legible to other agents: geography, use cases, pricing, policies, evidence, response times, availability, constraints, and authorized transaction actions.
+
+The agent journey is:
+
+`research → compare → negotiate → transact → fulfillment`
+
+VLA asks other agents for decision-relevant principal intent and constraints, not unnecessary personal identity.
+
+## 2027+ Marketing Operating System
+
+VLA does not optimize marketing channels in isolation. It optimizes the customer's decision environment:
+
+`Audience → Intent → Prompt/Query Universe → Discovery Surfaces → Evidence/Authority → Conversion → Revenue → Learning`
+
+That includes:
+
+- traditional search and SEO
+- paid search as rapid intent testing
+- AEO / AI answer visibility
+- AI Agent Optimization
+- entity/recommendation graphs
+- local/video/community/editorial discovery
+- conversion and revenue systems
+- agent-operable APIs/MCP/WebMCP/A2A adapters where useful
+- controlled experiments and outcome memory
+
+## Privacy-first knowledge moat
+
+Historical client evidence is private source material, not reusable content.
+
+VLA may learn generalized operating patterns, failure modes, conditional decision rules, benchmark ranges, and outcomes, but it must not reuse or expose client names, people, domains, emails, IDs, credentials, private URLs, confidential correspondence, or re-identifying combinations.
+
+**The moat is accumulated operating intelligence—not customer data.**
+
+The compounding loop is:
+
+`evidence → decision → action → verified outcome → privacy-safe learning → doctrine → better next decision`
 
 ## Use the OS today
 
@@ -39,57 +91,53 @@ Then prompt:
 
 > Use Venture Launch OS. Build and launch this business: [plain-English idea]
 
-That is enough to start.
-
 The system should infer what it can, research what it must, execute what connected tools permit, verify completion, and surface only genuine blockers.
 
 ## Operating doctrine
 
+- VLA is the persistent agent; models are replaceable
 - Autonomous execution over consulting
 - Revenue before elegance
 - First qualified opportunity / first revenue over website perfection
 - Solve fatal constraints first
-- Validate before scaling
+- Preserve proven equity before replacing existing assets
+- Audience and business value before raw keyword volume
+- Search + AEO + AI Agent Optimization as one discovery system
+- Paid media as intent testing, not only traffic buying
+- Decision-first reporting
+- Privacy-first cross-venture learning
 - Mobile-first; desktop is an adaptation
-- Quiet Luxury / Quiet Power visual language
-- Progressive conversion instead of exposed long forms
-- Backend, attribution, and analytics from day one
-- Original content authority over commodity SEO volume
-- Search + AI/machine legibility without unsupported ranking claims
+- Backend, attribution, analytics, and Venture State from day one
 - Tight unit economics
-- Variable cost before fixed infrastructure
-- Persistent Venture State
 - Maximum three active priorities
 - Never claim completion without verification
+- Never invent negotiation or transaction authority
 
 ## Repository structure
 
-- `SKILL.md` — master zero-to-one operating instructions
-- `VLA.md` — autonomous Venture Launch Agent specification
+- `SKILL.md` — master operating instructions
+- `VLA.md` — persistent autonomous-agent product specification
 - `AUTONOMOUS_EXECUTION.md` — permission, blocker, verification, and prioritization contract
-- `BRIEF_TEMPLATE.md` — optional minimal intake format
-- `playbooks/` — execution systems for discovery, naming/domain, technical launch, design, content, SEO, analytics, PPC, outreach, operations, and business infrastructure
+- `intelligence/` — Marketing Operating System, privacy protocol, historical doctrine, agent-economy architecture
+- `vla_runtime/` — runnable agent/runtime, model gateway, provider adapters, agent-to-agent APIs, Venture State
+- `playbooks/` — discovery, design, content, SEO/AEO, AI-agent readiness, analytics, PPC, outreach, operations, and infrastructure
 - `templates/` — reusable AI discovery, unit economics, starter-app, production QA, and Venture State specifications
 - `examples/` — reference implementations and case studies
-
-## Reference implementation
-
-DK / Dry Kleaning was the first business used to develop this operating model. It demonstrated the reusable architecture of a mobile-first local-service venture with quoting, lead capture, service/location content, structured search assets, AI/agent discovery, public APIs, outreach, and lean operations.
-
-The reusable asset is the architecture and decision system—not DK-specific pricing, geography, claims, partners, or customer data.
 
 ## Definition of launched
 
 A venture is not launched because a website exists.
 
-A zero-to-one launch means the applicable system is capable of:
+A launch means the applicable system is capable of:
 
 1. acquiring a real prospect/customer
-2. converting them through a working funnel
-3. persisting and routing the transaction/lead
-4. collecting payment when applicable
-5. fulfilling the promised outcome
-6. measuring source, conversion, economics, and outcome
-7. identifying the next bottleneck
+2. being understood/evaluated by relevant human and agent discovery systems
+3. converting through a working funnel or authorized agent action
+4. persisting and routing the lead/transaction
+5. collecting payment when applicable
+6. fulfilling the promised outcome
+7. measuring source, conversion, economics, and outcome
+8. identifying the next bottleneck
+9. learning from the verified result
 
 That is the Venture Launch OS / VLA standard.

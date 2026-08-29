@@ -34,6 +34,7 @@ class LaunchAnalysis(BaseModel):
     preservation_map: dict = Field(default_factory=dict)
     transformation_strategy: dict = Field(default_factory=dict)
     ai_agent_readiness: dict = Field(default_factory=dict)
+    historical_benchmark_context: dict = Field(default_factory=dict)
     current_bottleneck: str
     top_priorities: list[Priority]
     blockers: list[dict] = Field(default_factory=list)
@@ -71,6 +72,16 @@ The user provides an idea or business brief. Start from zero: validate problem/I
 
 MODE B — EXISTING BUSINESS TRANSFORMATION
 The user provides an existing business URL. Treat the current site and its historical search/conversion equity as assets, not disposable design material.
+
+HISTORICAL INTELLIGENCE
+VLA may receive private, anonymized benchmark evidence from historical client work. Treat that evidence as a decision-support layer, not ground truth.
+- Prefer comparable cases by industry, business model, geography, customer value, sales cycle, channel, audience intent, and local/national scope.
+- Require evidence-quality and compatibility thresholds before using a case as benchmark support.
+- Never expose private client identity, source IDs, account IDs, emails, or confidential metrics.
+- State sample size and confidence for numeric benchmarks.
+- Separate VERIFIED, STRONGLY_SUPPORTED, INFERRED, and UNKNOWN attribution.
+- Never generalize from one client as if it were a universal law.
+- Use PPC-to-SEO transfer as a hypothesis: high-converting paid search terms may reveal organic/AEO opportunities, but channel behavior must still be verified.
 
 For MODE B:
 1. Inspect the public website and current web evidence. Determine what the business is, products/services, geography, conversion paths, site architecture, visible content, technical/search issues, schema/entity clarity, and AI-agent readiness.
@@ -113,6 +124,7 @@ For MODE B:
 24. Never call a site AI-agent ready merely because llms.txt exists. Agent readiness requires truthful machine-readable information and verified agent-operable actions where applicable.
 25. Never claim GA4/Search Console/Ads/GBP data was reviewed unless the corresponding authorized data was actually available.
 26. Track AI visibility separately from SEO: observable brand mentions, cited URLs, competitor citation share where measurable, AI referrals, self-reported AI attribution, and crawler activity. Bot visits are not proof of citation.
+27. When historical benchmark evidence is available, include a concise historical_benchmark_context describing comparable-case count, quality/confidence, reusable patterns, known failure modes, and which recommendations were influenced by prior evidence.
 
 GENERAL RULES
 - Use web search for current market, competitor, pricing, regulatory, and public-site evidence when useful.
@@ -140,6 +152,14 @@ def build_agent() -> Agent:
 async def analyze_venture(state: VentureState) -> LaunchAnalysis:
     agent = build_agent()
 
+    benchmark_note = ""
+    if state.historical_benchmark_context:
+        benchmark_note = (
+            "\nPrivate anonymized historical benchmark context is available in Venture State. "
+            "Use it conservatively, do not expose identities, and report sample size/confidence.\n"
+            + str(state.historical_benchmark_context)
+        )
+
     if state.entry_mode == "existing_business":
         prompt = f"""
 Transform this existing business using Venture Launch OS Mode B.
@@ -156,7 +176,9 @@ Return a structured first-pass transformation analysis that includes:
 - ai_agent_readiness: SEO/AEO/schema/LLM discovery/API-CLI/MCP/WebMCP gaps and highest-value next improvements
 - in market/gtm, include an audience-first plan with priority audiences, business value, demand, attainability, what NOT to chase, and audience/content gaps
 - include a prompt/topic fan-out for the highest-value audience, classify major prompts as CLICK-DEPENDENT/CITATION-FIRST/HYBRID, identify likely citation/brand gaps, and assess consensus/freshness/authority weaknesses
+- historical_benchmark_context when comparable private historical evidence exists
 - no more than three priorities
+{benchmark_note}
 """
     else:
         prompt = (
@@ -164,7 +186,8 @@ Return a structured first-pass transformation analysis that includes:
             "Set entry_mode to exactly 'greenfield'. "
             "Before keyword research, define commercially meaningful audience segments and rank them by business value, search demand and attainability. "
             "For the highest-value audience, create a prompt/topic fan-out instead of targeting a single head term, classify major prompts as CLICK-DEPENDENT, CITATION-FIRST, or HYBRID, and build SEO/AEO around topic-wide relevance, citation readiness, and qualified business value. "
-            "Treat the following as the founder's casual idea statement:\n\n" + state.idea
+            "Use any private anonymized historical benchmark evidence conservatively and report sample size/confidence. "
+            "Treat the following as the founder's casual idea statement:\n\n" + state.idea + benchmark_note
         )
 
     result = await Runner.run(agent, prompt)
@@ -189,6 +212,8 @@ def merge_analysis(state: VentureState, analysis: LaunchAnalysis) -> VentureStat
     state.preservation_map = analysis.preservation_map
     state.transformation_strategy = analysis.transformation_strategy
     state.ai_agent_readiness = analysis.ai_agent_readiness
+    if analysis.historical_benchmark_context:
+        state.historical_benchmark_context = analysis.historical_benchmark_context
     state.current_bottleneck = analysis.current_bottleneck
     state.top_priorities = [item.model_dump() for item in analysis.top_priorities]
     state.blockers = analysis.blockers

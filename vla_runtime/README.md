@@ -1,4 +1,4 @@
-# VLA Runtime v0.3
+# VLA Runtime v0.4
 
 Venture Launch Agent (VLA) is the persistent autonomous business-growth agent for Venture Launch OS.
 
@@ -8,14 +8,60 @@ VLA owns the mission, Venture State, decision policy, privacy rules, business pe
 
 **Persistent VLA, replaceable models.**
 
-Current provider registry supports configuration for:
+VLA preserves the system already built. v0.4 adds multi-provider orchestration without deleting the established OpenAI path.
+
+Supported provider classes:
 
 - OpenAI
 - Anthropic Claude
 - Google Gemini
 - xAI Grok
 
-The current primary orchestrator is implemented with the OpenAI Agents SDK. Claude, Gemini, and Grok have provider adapters/model-gateway support for progressive multi-provider execution; they are not yet claimed as fully equivalent orchestrator runtimes.
+The OpenAI path retains the existing hosted-tool implementation. Claude, Gemini, and Grok can run the same VLA policy and structured-output contract through the OpenAI Agents SDK Any-LLM adapter when explicitly configured.
+
+## Configure the VLA intelligence provider
+
+Set:
+
+```bash
+VLA_PROVIDER=openai   # openai | anthropic | gemini | xai | auto
+```
+
+OpenAI can use the SDK default model or an explicit model:
+
+```bash
+OPENAI_API_KEY=
+VLA_OPENAI_AGENT_MODEL=
+```
+
+For non-OpenAI providers, configure the provider key and a full Any-LLM model route. VLA deliberately does not hard-code provider-specific current/future model IDs.
+
+```bash
+ANTHROPIC_API_KEY=
+VLA_ANTHROPIC_AGENT_MODEL=any-llm/anthropic/<current-model-id>
+
+GEMINI_API_KEY=
+VLA_GEMINI_AGENT_MODEL=any-llm/gemini/<current-model-id>
+
+XAI_API_KEY=
+VLA_XAI_AGENT_MODEL=any-llm/xai/<current-model-id>
+```
+
+`VLA_PROVIDER=auto` chooses the first configured provider satisfying the VLA orchestration requirements.
+
+Provider secrets are never returned by `/agent`, stored in Venture State, or committed.
+
+## Provider execution behavior
+
+### OpenAI
+Uses the established VLA agent path, including OpenAI-hosted web search plus VLA function tools.
+
+### Claude / Gemini / Grok
+Uses the same VLA identity, doctrine, privacy policy, structured `LaunchAnalysis`, approval tool, state model, and execution loop through the Agents SDK Any-LLM route.
+
+For public-site inspection, the non-OpenAI path uses VLA's own bounded `fetch_public_webpage` tool. It blocks loopback/private/link-local/reserved destinations and does not authenticate to websites.
+
+VLA does **not** claim broad search-engine research when only direct webpage fetching occurred.
 
 ## Two venture entry modes
 
@@ -23,13 +69,13 @@ The current primary orchestrator is implemented with the OpenAI Agents SDK. Clau
 Input a plain-English business idea. VLA researches and structures the zero-to-one venture path.
 
 ### Mode B — Existing Business Transformation
-Input an existing business URL. VLA performs a public-site/public-web audit, requests relevant first-party data access, builds a preservation map, recommends upgrade vs progressive modernization vs controlled rebuild, and assesses AI-agent readiness.
+Input an existing business URL. VLA audits the public business surface, requests relevant first-party data access, builds a preservation map, recommends upgrade vs progressive modernization vs controlled rebuild, and assesses AI-agent readiness.
 
 The Mode B principle is: **preserve before replacing**.
 
 ## Agent-economy role
 
-VLA is designed to help a business become:
+VLA helps a business become:
 
 `discoverable -> understandable -> trustworthy -> recommendable -> negotiable -> transactable`
 
@@ -81,35 +127,6 @@ Evaluates a proposed price against explicit commercial authority and returns:
 
 VLA never invents authority to discount, change policy, sign agreements, or transact outside explicit business rules.
 
-## Model gateway
-
-Provider/model IDs are configured by environment rather than hard-coded into doctrine:
-
-```bash
-OPENAI_API_KEY=
-VLA_OPENAI_MODEL=
-
-ANTHROPIC_API_KEY=
-VLA_ANTHROPIC_MODEL=
-
-GEMINI_API_KEY=
-VLA_GEMINI_MODEL=
-
-XAI_API_KEY=
-VLA_XAI_MODEL=
-```
-
-Provider secrets are never returned by `/agent`, stored in Venture State, or committed.
-
-Optional provider SDKs can be installed with:
-
-```bash
-pip install -e '.[anthropic]'
-pip install -e '.[gemini]'
-pip install -e '.[xai]'
-pip install -e '.[all-providers]'
-```
-
 ## Existing-business data rule
 
 VLA never asks for a Google password or raw credentials.
@@ -139,8 +156,6 @@ From `vla_runtime/`:
 uv sync
 cp .env.example .env.local
 ```
-
-Configure an OpenAI model/key for the current primary orchestrator, then:
 
 Greenfield:
 
@@ -180,31 +195,35 @@ pytest -q \
   evals/test_entry_modes.py \
   evals/test_intelligence.py \
   evals/test_agent_economy.py \
-  evals/test_model_gateway.py
+  evals/test_model_gateway.py \
+  evals/test_provider_agent.py
 ```
 
-GitHub Actions compiles the runtime and runs the same regression suite on runtime changes.
+GitHub Actions compiles the runtime and runs this regression suite on runtime changes.
 
-## Current release boundary
+## v0.4 release boundary
 
-v0.3 ships:
+Shipped in code:
 
+- all prior VLA/Venture Launch OS behavior preserved
 - persistent VLA product identity
 - greenfield and existing-business reasoning contracts
 - privacy-safe historical intelligence
 - 2027+ marketing/agent-economy doctrine
+- agent-to-agent discovery/evaluation/negotiation API
+- AI Agent Optimization readiness model
 - provider-neutral model registry
-- OpenAI/Claude/Gemini/Grok client adapters
-- agent intent discovery
-- business fit evaluation
-- agent-readiness scoring
-- bounded negotiation decisions
-- HTTP agent-to-agent surface
+- runtime provider router
+- OpenAI established orchestrator path preserved
+- Claude/Gemini/Grok same-agent orchestration through configurable Any-LLM routes
+- bounded public-webpage tool for non-OpenAI site audits
+- private-network/SSRF protections on public-page fetching
+- regression coverage for provider configuration and safety
 
-Not yet verified/complete:
+Still separate from this code-only release:
 
+- real provider API credentials and live-provider smoke tests
 - production deployment
-- equivalent full autonomous orchestrator loops on all four model providers
 - authenticated commerce/payment execution
 - standardized external A2A transport interoperability
-- live provider benchmark-based auto-routing
+- live benchmark-based model auto-routing

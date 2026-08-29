@@ -1,10 +1,10 @@
 [project]
 name = "venture-launch-agent"
-version = "0.3.0"
+version = "0.4.0"
 description = "Autonomous venture launch, business-growth, and agent-economy operator built on Venture Launch OS"
 requires-python = ">=3.11"
 dependencies = [
-  "openai-agents>=0.4.0",
+  "openai-agents[any-llm]>=0.4.0",
   "pydantic>=2.8.0",
   "fastapi>=0.115.0",
   "uvicorn>=0.30.0"

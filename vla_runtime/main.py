@@ -9,7 +9,7 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from agent import analyze_venture, looks_like_url, merge_analysis, normalized_url
+from agent import looks_like_url, merge_analysis, normalized_url
 from agent_economy import (
     AgentCapabilityRequest,
     AgentJourneyStage,
@@ -24,9 +24,10 @@ from agent_economy import (
 )
 from model_gateway import provider_status
 from persistence import load_state, save_state
+from runtime_router import analyze_venture
 from state import VentureState
 
-app = FastAPI(title="Venture Launch Agent", version="0.3.0")
+app = FastAPI(title="Venture Launch Agent", version="0.4.0")
 
 
 class LaunchRequest(BaseModel):
@@ -128,14 +129,14 @@ def state_from_request(request: LaunchRequest) -> VentureState:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "vla", "version": "0.3.0"}
+    return {"status": "ok", "service": "vla", "version": "0.4.0"}
 
 
 @app.get("/agent")
 def agent_identity() -> dict:
     return {
         **VLA_AGENT_IDENTITY,
-        "version": "0.3.0",
+        "version": "0.4.0",
         "journey_stages": [stage.value for stage in AgentJourneyStage],
         "providers": provider_status(),
     }
@@ -250,7 +251,7 @@ async def run_cli(value: str, mode: str = "auto") -> None:
 
 
 def cli() -> None:
-    parser = argparse.ArgumentParser(description="Venture Launch Agent v0.3")
+    parser = argparse.ArgumentParser(description="Venture Launch Agent v0.4")
     parser.add_argument("input", help="Plain-English business idea OR existing business URL")
     parser.add_argument(
         "--mode",

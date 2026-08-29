@@ -28,4 +28,4 @@ jobs:
       - name: Compile runtime
         run: python -m compileall -q .
       - name: Run tests
-        run: pytest -q evals/test_approvals.py evals/test_entry_modes.py
+        run: pytest -q evals/test_approvals.py evals/test_entry_modes.py evals/test_intelligence.py

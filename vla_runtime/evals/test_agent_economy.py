@@ -3,12 +3,19 @@ from agent_economy import (
     AgentJourneyStage,
     BusinessAgentProfile,
     BuyerAgentContext,
+    NegotiationDecision,
     NegotiationPolicy,
     PrincipalType,
+    VLA_AGENT_IDENTITY,
     agent_readiness_score,
     discovery_questions,
     evaluate_fit,
 )
+
+
+def test_vla_has_persistent_agent_identity() -> None:
+    assert VLA_AGENT_IDENTITY["short_name"] == "VLA"
+    assert "AI agents" in VLA_AGENT_IDENTITY["mission"]
 
 
 def test_discovery_questions_avoid_identity() -> None:
@@ -43,16 +50,18 @@ def test_business_agent_fit_uses_intent_and_geography() -> None:
     assert result.available_actions == ["request_consultation"]
 
 
-def test_negotiation_policy_enforces_floor_and_approval() -> None:
+def test_negotiation_policy_distinguishes_authority_from_rejection() -> None:
     policy = NegotiationPolicy(
         currency="CAD",
         list_price=1000,
         minimum_price=800,
+        maximum_discount_pct=5,
         approval_required_below=900,
     )
-    assert policy.can_offer(950)
-    assert not policy.can_offer(850)
-    assert not policy.can_offer(700)
+    assert policy.decision(975) == NegotiationDecision.ALLOWED
+    assert policy.decision(925) == NegotiationDecision.APPROVAL_REQUIRED
+    assert policy.decision(850) == NegotiationDecision.APPROVAL_REQUIRED
+    assert policy.decision(700) == NegotiationDecision.REJECTED
 
 
 def test_agent_readiness_is_internal_score() -> None:

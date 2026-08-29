@@ -15,35 +15,39 @@ class Provider(str, Enum):
 @dataclass(frozen=True)
 class ProviderConfig:
     provider: Provider
-    model: str
+    model_env: str
     api_key_env: str
     base_url: str | None = None
     supports_tools: bool = True
     supports_structured_output: bool = True
     supports_remote_mcp: bool = False
 
+    @property
+    def model(self) -> str:
+        return os.getenv(self.model_env, "").strip()
+
 
 DEFAULTS: dict[Provider, ProviderConfig] = {
     Provider.OPENAI: ProviderConfig(
         provider=Provider.OPENAI,
-        model=os.getenv("VLA_OPENAI_MODEL", "gpt-5.6"),
+        model_env="VLA_OPENAI_MODEL",
         api_key_env="OPENAI_API_KEY",
         supports_remote_mcp=True,
     ),
     Provider.ANTHROPIC: ProviderConfig(
         provider=Provider.ANTHROPIC,
-        model=os.getenv("VLA_ANTHROPIC_MODEL", "claude-opus-5"),
+        model_env="VLA_ANTHROPIC_MODEL",
         api_key_env="ANTHROPIC_API_KEY",
     ),
     Provider.GEMINI: ProviderConfig(
         provider=Provider.GEMINI,
-        model=os.getenv("VLA_GEMINI_MODEL", "gemini-3.7-flash"),
+        model_env="VLA_GEMINI_MODEL",
         api_key_env="GEMINI_API_KEY",
         supports_remote_mcp=True,
     ),
     Provider.XAI: ProviderConfig(
         provider=Provider.XAI,
-        model=os.getenv("VLA_XAI_MODEL", "grok-4.6"),
+        model_env="VLA_XAI_MODEL",
         api_key_env="XAI_API_KEY",
         base_url="https://api.x.ai/v1",
     ),
@@ -61,13 +65,13 @@ class ModelTask:
 
 def provider_available(provider: Provider) -> bool:
     config = DEFAULTS[provider]
-    return bool(os.getenv(config.api_key_env))
+    return bool(os.getenv(config.api_key_env) and config.model)
 
 
-def eligible_providers(task: ModelTask, require_key: bool = True) -> list[Provider]:
+def eligible_providers(task: ModelTask, require_configuration: bool = True) -> list[Provider]:
     eligible: list[Provider] = []
     for provider, config in DEFAULTS.items():
-        if require_key and not provider_available(provider):
+        if require_configuration and not provider_available(provider):
             continue
         if task.requires_tools and not config.supports_tools:
             continue
@@ -82,14 +86,15 @@ def eligible_providers(task: ModelTask, require_key: bool = True) -> list[Provid
 def select_provider(
     task: ModelTask,
     preferred: Provider | None = None,
-    require_key: bool = True,
+    require_configuration: bool = True,
 ) -> Provider:
     """Select an eligible provider without coupling VLA doctrine to one model.
 
-    This is deliberately deterministic. Quality/cost/latency routing can later be
-    supplied by the model-evaluation registry, while business policy remains stable.
+    Provider/model names come from configuration so VLA never hard-codes speculative
+    future model IDs. Quality/cost/latency routing can later be supplied by the
+    model-evaluation registry while business policy remains stable.
     """
-    eligible = eligible_providers(task, require_key=require_key)
+    eligible = eligible_providers(task, require_configuration=require_configuration)
     if preferred is not None and preferred in eligible:
         return preferred
     if not eligible:
@@ -102,6 +107,7 @@ def model_descriptor(provider: Provider) -> dict[str, str | bool | None]:
     return {
         "provider": config.provider.value,
         "model": config.model,
+        "model_env": config.model_env,
         "api_key_env": config.api_key_env,
         "base_url": config.base_url,
         "supports_tools": config.supports_tools,

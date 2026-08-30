@@ -15,14 +15,14 @@ def test_greenfield_bootstraps_v2_team_and_pipeline() -> None:
 
 def test_greenfield_requires_revenue_test_before_infrastructure() -> None:
     pipeline = pipeline_for(PipelineKind.LAUNCH)
-    phase_names = [phase.name for phase in pipeline]
-    assert "revenue_test" in phase_names
-    assert phase_names.index("validate") < phase_names.index("revenue_test") < phase_names.index("infrastructure")
+    phase_ids = [phase.phase_id for phase in pipeline]
+    assert "revenue_test" in phase_ids
+    assert phase_ids.index("validate") < phase_ids.index("revenue_test") < phase_ids.index("infrastructure")
 
 
 def test_revenue_test_has_commercial_evidence_and_decision_exit_criteria() -> None:
     pipeline = pipeline_for(PipelineKind.LAUNCH)
-    revenue_test = next(phase for phase in pipeline if phase.name == "revenue_test")
+    revenue_test = next(phase for phase in pipeline if phase.phase_id == "revenue_test")
     criteria = " ".join(revenue_test.exit_criteria).lower()
     assert revenue_test.owner == AgentRole.GROWTH
     assert revenue_test.approval_sensitive

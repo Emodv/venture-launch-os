@@ -13,6 +13,27 @@ def test_greenfield_bootstraps_v2_team_and_pipeline() -> None:
     assert "growth_marketer" in state.specialist_team
 
 
+def test_greenfield_requires_revenue_test_before_infrastructure() -> None:
+    pipeline = pipeline_for(PipelineKind.LAUNCH)
+    phase_names = [phase.name for phase in pipeline]
+    assert "revenue_test" in phase_names
+    assert phase_names.index("validate") < phase_names.index("revenue_test") < phase_names.index("infrastructure")
+
+
+def test_revenue_test_has_commercial_evidence_and_decision_exit_criteria() -> None:
+    pipeline = pipeline_for(PipelineKind.LAUNCH)
+    revenue_test = next(phase for phase in pipeline if phase.name == "revenue_test")
+    criteria = " ".join(revenue_test.exit_criteria).lower()
+    assert revenue_test.owner == AgentRole.GROWTH
+    assert revenue_test.approval_sensitive
+    assert "commercial evidence" in criteria
+    assert "actual_result" in criteria
+    assert "scale" in criteria
+    assert "iterate" in criteria
+    assert "hold" in criteria
+    assert "kill" in criteria
+
+
 def test_existing_business_uses_transformation_pipeline() -> None:
     state = state_from_request(LaunchRequest(input="https://example.com"))
     assert state.pipeline_kind == PipelineKind.TRANSFORM.value

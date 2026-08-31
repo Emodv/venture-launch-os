@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "venture": "[name]",
+  "scored_at": "[ISO-8601]",
+  "evidence_status": "hypothesis|tested|verified",
+  "economics": {
+    "first_paid_offer": "[offer]",
+    "expected_price": null,
+    "currency": "CAD",
+    "estimated_gross_margin_pct": null,
+    "maximum_validation_spend": null,
+    "first_revenue_target_date": null
+  },
+  "validation": {
+    "cheapest_credible_test": "[test]",
+    "success_threshold": "[paid order/deposit/qualified meeting/signed pilot]",
+    "actual_result": null,
+    "commercial_evidence": [],
+    "vanity_metrics": []
+  },
+  "scores_0_to_10": {
+    "value": null,
+    "probability": null,
+    "speed_to_cash": null,
+    "reusability": null,
+    "automation_leverage": null,
+    "effort_inverse": null
+  },
+  "weighted_score_0_to_100": null,
+  "scoring_formula": "10 * (0.25*value + 0.25*probability + 0.20*speed_to_cash + 0.10*reusability + 0.10*automation_leverage + 0.10*effort_inverse)",
+  "decision": "SCALE|ITERATE|HOLD|KILL",
+  "decision_rules": {
+    "scale": "Verified commercial evidence meets or exceeds success threshold and economics are plausible.",
+    "iterate": "Signal exists but threshold/economics are not yet strong enough; change one major variable and retest.",
+    "hold": "Potentially attractive but blocked by timing, dependency, evidence gap, or owner decision.",
+    "kill": "Repeated credible tests fail, economics are structurally unattractive, or weighted score remains below 50 after evidence collection."
+  },
+  "kill_threshold": "[venture-specific measurable threshold]",
+  "next_revenue_test": "[single highest-value test]",
+  "test_owner": "[owner]",
+  "expected_cost": null,
+  "expected_human_hours": null,
+  "assumptions": [],
+  "risks": [],
+  "evidence_sources": [],
+  "notes": "Unknown values remain null. Never fabricate economics, demand, conversion, CAC, margin, or willingness to pay."
+}

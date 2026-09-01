@@ -4,18 +4,21 @@ on:
   push:
     paths:
       - "vla_runtime/**"
+      - "templates/AGENT_CAPABILITY_MANIFEST.schema.json"
+      - "templates/agent.example.json"
+      - "scripts/validate_agent_manifest.py"
       - ".github/workflows/vla-runtime-ci.yml"
   pull_request:
     paths:
       - "vla_runtime/**"
+      - "templates/AGENT_CAPABILITY_MANIFEST.schema.json"
+      - "templates/agent.example.json"
+      - "scripts/validate_agent_manifest.py"
       - ".github/workflows/vla-runtime-ci.yml"
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: vla_runtime
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,10 +27,13 @@ jobs:
       - name: Install runtime and test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e . pytest
+          pip install -e ./vla_runtime pytest jsonschema
       - name: Compile runtime
-        run: python -m compileall -q .
-      - name: Run tests
+        run: python -m compileall -q vla_runtime scripts
+      - name: Validate agent capability contract
+        run: python scripts/validate_agent_manifest.py
+      - name: Run runtime tests
+        working-directory: vla_runtime
         env:
           PYTHONPATH: .
         run: pytest -q evals/test_approvals.py evals/test_entry_modes.py evals/test_intelligence.py evals/test_agent_economy.py evals/test_model_gateway.py evals/test_provider_agent.py evals/test_v2_runtime.py

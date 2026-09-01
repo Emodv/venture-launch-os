@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "venture": {
+    "id": "example-venture",
+    "name": "Example Venture",
+    "canonical_url": "https://example.com",
+    "description": "Example VLA-powered venture used to verify the agent capability contract.",
+    "status": "pilot",
+    "languages": ["en"],
+    "markets": ["CA"]
+  },
+  "offers": [
+    {
+      "id": "pilot-offer",
+      "name": "Pilot Offer",
+      "status": "test",
+      "pricing": {
+        "mode": "quote_required",
+        "currency": "CAD",
+        "amount": null,
+        "min": null,
+        "max": null,
+        "unit": null,
+        "final_price_requires_confirmation": true
+      },
+      "eligibility": {
+        "geographies": ["CA"],
+        "requirements": [],
+        "exclusions": []
+      },
+      "sla": null
+    }
+  ],
+  "actions": [
+    {
+      "id": "qualify",
+      "purpose": "qualify",
+      "readiness": "documented",
+      "method": "POST",
+      "endpoint": "https://example.com/api/qualify",
+      "auth": "none",
+      "consequence": "reversible",
+      "requires_human_confirmation": false,
+      "input_schema": null,
+      "output_schema": null,
+      "idempotency": {"supported": false, "header": null},
+      "receipt": {"returned": false, "identifier_field": null, "status_url_field": null}
+    }
+  ],
+  "policies": {
+    "truth": "Only production-verified capabilities may be advertised as production_verified.",
+    "negotiation": {
+      "autonomous_discount_allowed": false,
+      "max_discount_percent": null,
+      "human_approval_required_for_exceptions": true
+    },
+    "privacy": "Collect only data required to perform the requested action.",
+    "terms_url": null,
+    "privacy_url": null
+  },
+  "verification": {
+    "last_verified_at": null,
+    "verified_actions": [],
+    "changelog_url": null
+  }
+}

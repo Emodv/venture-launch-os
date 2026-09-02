@@ -3,6 +3,7 @@
 import json
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -14,6 +15,11 @@ DEFAULT_MANIFEST = ROOT / "templates" / "agent.example.json"
 def fail(message: str) -> None:
     print(f"ERROR: {message}", file=sys.stderr)
     raise SystemExit(1)
+
+
+def origin(url: str) -> tuple[str, str, int | None]:
+    parsed = urlparse(url)
+    return parsed.scheme, parsed.hostname or "", parsed.port
 
 
 def main() -> None:
@@ -36,7 +42,8 @@ def main() -> None:
     if unknown:
         fail(f"verified_actions contains unknown action IDs: {sorted(unknown)}")
 
-    production = {a["id"] for a in manifest["actions"] if a["readiness"] == "production_verified"}
+    production_actions = [a for a in manifest["actions"] if a["readiness"] == "production_verified"]
+    production = {a["id"] for a in production_actions}
     if production != verified:
         fail(
             "production_verified actions must exactly match verification.verified_actions; "
@@ -45,6 +52,16 @@ def main() -> None:
 
     if production and not manifest["verification"]["last_verified_at"]:
         fail("production_verified actions require verification.last_verified_at")
+
+    venture_origin = origin(manifest["venture"]["canonical_url"])
+    for action in production_actions:
+        probe = action.get("verification_probe")
+        if not probe:
+            fail(f"production_verified action '{action['id']}' requires a non-mutating verification_probe")
+        if origin(probe["url"]) != venture_origin:
+            fail(f"verification_probe for '{action['id']}' must be same-origin as venture.canonical_url")
+        if action["consequence"] != "read_only" and action["method"] == "GET":
+            fail(f"state-changing action '{action['id']}' must not advertise GET as its action method")
 
     print(f"PASS: {manifest_path} validates against VLA agent capability contract")
 

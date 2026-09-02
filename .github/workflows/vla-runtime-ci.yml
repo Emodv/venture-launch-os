@@ -7,6 +7,7 @@ on:
       - "templates/AGENT_CAPABILITY_MANIFEST.schema.json"
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
+      - "scripts/verify_agent_probes.py"
       - ".github/workflows/vla-runtime-ci.yml"
   pull_request:
     paths:
@@ -14,6 +15,7 @@ on:
       - "templates/AGENT_CAPABILITY_MANIFEST.schema.json"
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
+      - "scripts/verify_agent_probes.py"
       - ".github/workflows/vla-runtime-ci.yml"
 
 jobs:
@@ -32,6 +34,8 @@ jobs:
         run: python -m compileall -q vla_runtime scripts
       - name: Validate agent capability contract
         run: python scripts/validate_agent_manifest.py
+      - name: Verify production agent capability probes
+        run: python scripts/verify_agent_probes.py
       - name: Run runtime tests
         working-directory: vla_runtime
         env:

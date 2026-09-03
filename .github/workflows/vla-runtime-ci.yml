@@ -36,6 +36,14 @@ jobs:
         run: python scripts/validate_agent_manifest.py
       - name: Verify production agent capability probes
         run: python scripts/verify_agent_probes.py
+      - name: Publish agent verification receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-verification-receipt-${{ github.sha }}
+          path: artifacts/agent-verification-receipt.json
+          if-no-files-found: error
+          retention-days: 90
       - name: Run runtime tests
         working-directory: vla_runtime
         env:

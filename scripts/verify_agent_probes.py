@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Safely verify production agent capability probes and emit a receipt."""
+"""Safely verify production agent capability probes and emit a durable receipt."""
+import hashlib
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,6 +11,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 DEFAULT_MANIFEST = Path("templates/agent.example.json")
+DEFAULT_RECEIPT = Path("artifacts/agent-verification-receipt.json")
 
 
 def origin(url: str):
@@ -21,8 +24,13 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+def canonical_json(value) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
 def main() -> None:
     manifest_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_MANIFEST
+    receipt_path = Path(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_RECEIPT
     manifest = json.loads(manifest_path.read_text())
     canonical_origin = origin(manifest["venture"]["canonical_url"])
     results = []
@@ -42,7 +50,7 @@ def main() -> None:
         status = None
         error = None
         try:
-            req = Request(url, method="GET", headers={"User-Agent": "VLA-Agent-Readiness-Verifier/1.0"})
+            req = Request(url, method="GET", headers={"User-Agent": "VLA-Agent-Readiness-Verifier/1.1"})
             with urlopen(req, timeout=10) as response:
                 status = response.status
         except HTTPError as exc:
@@ -60,16 +68,24 @@ def main() -> None:
             "error": error,
         })
 
+    manifest_sha256 = hashlib.sha256(canonical_json(manifest).encode("utf-8")).hexdigest()
     receipt = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "venture_id": manifest["venture"]["id"],
         "canonical_url": manifest["venture"]["canonical_url"],
+        "manifest_sha256": manifest_sha256,
+        "source_revision": os.getenv("GITHUB_SHA"),
         "verified_at": datetime.now(timezone.utc).isoformat(),
         "production_actions_checked": len(production),
         "passed": all(r["passed"] for r in results),
         "results": results,
     }
+    receipt["receipt_sha256"] = hashlib.sha256(canonical_json(receipt).encode("utf-8")).hexdigest()
+
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
     print(json.dumps(receipt, indent=2))
+    print(f"Receipt written to {receipt_path}", file=sys.stderr)
     if not receipt["passed"]:
         raise SystemExit(1)
 

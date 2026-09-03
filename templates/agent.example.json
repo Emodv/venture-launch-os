@@ -61,6 +61,9 @@
   "verification": {
     "last_verified_at": null,
     "verified_actions": [],
-    "changelog_url": null
+    "changelog_url": null,
+    "receipt_url": "https://example.com/.well-known/agent-verification.json",
+    "receipt_sha256": null,
+    "receipt_schema_version": "1.1"
   }
 }

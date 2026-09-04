@@ -9,6 +9,7 @@ on:
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
+      - "scripts/publish_agent_receipt.py"
       - ".github/workflows/vla-runtime-ci.yml"
   pull_request:
     paths:
@@ -18,6 +19,7 @@ on:
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
+      - "scripts/publish_agent_receipt.py"
       - ".github/workflows/vla-runtime-ci.yml"
 
 jobs:
@@ -48,12 +50,16 @@ jobs:
           Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
           print('Agent verification receipt valid')
           PY
-      - name: Publish agent verification receipt
+      - name: Build deployable agent verification receipt
+        run: python scripts/publish_agent_receipt.py
+      - name: Publish agent verification artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agent-verification-receipt-${{ github.sha }}
-          path: artifacts/agent-verification-receipt.json
+          path: |
+            artifacts/agent-verification-receipt.json
+            artifacts/agent-publication/.well-known/agent-verification.json
           if-no-files-found: error
           retention-days: 90
       - name: Run runtime tests

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://venture-launch-os.local/schemas/agent-verification-receipt.schema.json",
+  "title": "VLA Agent Verification Receipt",
+  "description": "Machine-readable proof that advertised production agent actions were safely probed against the venture's canonical origin.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "venture_id",
+    "canonical_url",
+    "manifest_sha256",
+    "source_revision",
+    "verified_at",
+    "production_actions_checked",
+    "passed",
+    "results",
+    "receipt_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "venture_id": {"type": "string", "minLength": 1},
+    "canonical_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_revision": {"type": ["string", "null"]},
+    "verified_at": {"type": "string", "format": "date-time"},
+    "production_actions_checked": {"type": "integer", "minimum": 0},
+    "passed": {"type": "boolean"},
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action_id", "probe_url", "expected_status", "observed_status", "passed", "error"],
+        "properties": {
+          "action_id": {"type": "string", "minLength": 1},
+          "probe_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+          "expected_status": {"type": "integer", "minimum": 200, "maximum": 399},
+          "observed_status": {"type": ["integer", "null"], "minimum": 100, "maximum": 599},
+          "passed": {"type": "boolean"},
+          "error": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

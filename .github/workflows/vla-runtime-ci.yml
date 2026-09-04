@@ -5,6 +5,7 @@ on:
     paths:
       - "vla_runtime/**"
       - "templates/AGENT_CAPABILITY_MANIFEST.schema.json"
+      - "templates/AGENT_VERIFICATION_RECEIPT.schema.json"
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
@@ -13,6 +14,7 @@ on:
     paths:
       - "vla_runtime/**"
       - "templates/AGENT_CAPABILITY_MANIFEST.schema.json"
+      - "templates/AGENT_VERIFICATION_RECEIPT.schema.json"
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
@@ -36,6 +38,16 @@ jobs:
         run: python scripts/validate_agent_manifest.py
       - name: Verify production agent capability probes
         run: python scripts/verify_agent_probes.py
+      - name: Validate agent verification receipt contract
+        run: |
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.load(open('templates/AGENT_VERIFICATION_RECEIPT.schema.json'))
+          receipt = json.load(open('artifacts/agent-verification-receipt.json'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          print('Agent verification receipt valid')
+          PY
       - name: Publish agent verification receipt
         if: always()
         uses: actions/upload-artifact@v4

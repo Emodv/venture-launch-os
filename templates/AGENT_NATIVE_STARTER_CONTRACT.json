@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "venture": {
+    "id": "replace-with-stable-venture-id",
+    "name": "Replace with venture name",
+    "canonical_url": "https://example.com"
+  },
+  "readiness": {
+    "state": "browse",
+    "allowed_states": ["browse", "qualify", "quote", "book", "buy", "apply", "subscribe", "refer", "escalate_to_human"]
+  },
+  "discovery": {
+    "manifest_url": "https://example.com/.well-known/agent-manifest.json",
+    "verification_receipt_url": "https://example.com/.well-known/agent-verification.json",
+    "llms_txt_url": "https://example.com/llms.txt"
+  },
+  "offers": [],
+  "eligibility": {
+    "geographies": [],
+    "requirements": [],
+    "exclusions": []
+  },
+  "pricing": {
+    "currency": null,
+    "model": "unknown",
+    "public": false,
+    "amount": null,
+    "requires_quote": true
+  },
+  "actions": [],
+  "guardrails": {
+    "agent_may_commit_spend": false,
+    "agent_may_accept_legal_terms": false,
+    "agent_may_negotiate": false,
+    "human_approval_required_for": ["payment", "contract", "discount", "refund", "exclusivity"]
+  },
+  "verification": {
+    "receipt_schema_version": "1.0",
+    "receipt_url": "https://example.com/.well-known/agent-verification.json"
+  },
+  "change_control": {
+    "version": "0.1.0",
+    "updated_at": null,
+    "changelog_url": null
+  }
+}

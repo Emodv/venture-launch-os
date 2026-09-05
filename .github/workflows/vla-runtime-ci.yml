@@ -10,6 +10,7 @@ on:
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
       - "scripts/publish_agent_receipt.py"
+      - "scripts/install_agent_publication.py"
       - ".github/workflows/vla-runtime-ci.yml"
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
       - "scripts/publish_agent_receipt.py"
+      - "scripts/install_agent_publication.py"
       - ".github/workflows/vla-runtime-ci.yml"
 
 jobs:
@@ -52,6 +54,10 @@ jobs:
           PY
       - name: Build deployable agent verification receipt
         run: python scripts/publish_agent_receipt.py
+      - name: Verify static-host publication adapter
+        run: |
+          python scripts/install_agent_publication.py artifacts/agent-publication artifacts/static-host-smoke
+          cmp artifacts/agent-publication/.well-known/agent-verification.json artifacts/static-host-smoke/.well-known/agent-verification.json
       - name: Publish agent verification artifacts
         if: always()
         uses: actions/upload-artifact@v4

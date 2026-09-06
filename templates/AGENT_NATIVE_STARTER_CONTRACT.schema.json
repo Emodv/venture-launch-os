@@ -4,83 +4,48 @@
   "title": "VLA Agent-Native Starter Transaction Contract",
   "type": "object",
   "additionalProperties": false,
+  "$defs": {
+    "jsonSchema": {"type": "object"},
+    "offer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "description", "readiness_state", "eligibility", "pricing"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1},
+        "readiness_state": {"enum": ["browse", "qualify", "quote", "book", "buy", "apply", "subscribe", "refer", "escalate_to_human"]},
+        "eligibility": {"type": "object"},
+        "pricing": {"type": "object"}
+      }
+    },
+    "action": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "method", "url", "input_schema", "output_schema", "idempotency", "authorization", "human_approval_required", "errors"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "method": {"enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "input_schema": {"$ref": "#/$defs/jsonSchema"},
+        "output_schema": {"$ref": "#/$defs/jsonSchema"},
+        "idempotency": {"enum": ["safe", "idempotency_key_required", "not_idempotent"]},
+        "authorization": {"enum": ["none", "api_key", "oauth2", "signed_request", "human_session"]},
+        "human_approval_required": {"type": "boolean"},
+        "errors": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["code", "retryable"], "properties": {"code": {"type": "string", "minLength": 1}, "retryable": {"type": "boolean"}, "retry_after_seconds": {"type": ["integer", "null"], "minimum": 0}}}}
+      }
+    }
+  },
   "required": ["schema_version", "venture", "readiness", "discovery", "offers", "eligibility", "pricing", "actions", "guardrails", "verification", "change_control"],
   "properties": {
     "schema_version": {"const": "1.0"},
-    "venture": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "name", "canonical_url"],
-      "properties": {
-        "id": {"type": "string", "minLength": 1},
-        "name": {"type": "string", "minLength": 1},
-        "canonical_url": {"type": "string", "format": "uri", "pattern": "^https://"}
-      }
-    },
-    "readiness": {
-      "type": "object", "additionalProperties": false,
-      "required": ["state", "allowed_states"],
-      "properties": {
-        "state": {"enum": ["browse", "qualify", "quote", "book", "buy", "apply", "subscribe", "refer", "escalate_to_human"]},
-        "allowed_states": {"type": "array", "uniqueItems": true, "minItems": 1, "items": {"enum": ["browse", "qualify", "quote", "book", "buy", "apply", "subscribe", "refer", "escalate_to_human"]}}
-      }
-    },
-    "discovery": {
-      "type": "object", "additionalProperties": false,
-      "required": ["manifest_url", "verification_receipt_url", "llms_txt_url"],
-      "properties": {
-        "manifest_url": {"type": "string", "format": "uri", "pattern": "^https://"},
-        "verification_receipt_url": {"type": "string", "format": "uri", "pattern": "^https://"},
-        "llms_txt_url": {"type": "string", "format": "uri", "pattern": "^https://"}
-      }
-    },
-    "offers": {"type": "array", "items": {"type": "object"}},
-    "eligibility": {
-      "type": "object", "additionalProperties": false,
-      "required": ["geographies", "requirements", "exclusions"],
-      "properties": {
-        "geographies": {"type": "array", "items": {"type": "string"}},
-        "requirements": {"type": "array", "items": {"type": "string"}},
-        "exclusions": {"type": "array", "items": {"type": "string"}}
-      }
-    },
-    "pricing": {
-      "type": "object", "additionalProperties": false,
-      "required": ["currency", "model", "public", "amount", "requires_quote"],
-      "properties": {
-        "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
-        "model": {"type": "string", "minLength": 1},
-        "public": {"type": "boolean"},
-        "amount": {"type": ["number", "null"], "minimum": 0},
-        "requires_quote": {"type": "boolean"}
-      }
-    },
-    "actions": {"type": "array", "items": {"type": "object"}},
-    "guardrails": {
-      "type": "object", "additionalProperties": false,
-      "required": ["agent_may_commit_spend", "agent_may_accept_legal_terms", "agent_may_negotiate", "human_approval_required_for"],
-      "properties": {
-        "agent_may_commit_spend": {"type": "boolean"},
-        "agent_may_accept_legal_terms": {"type": "boolean"},
-        "agent_may_negotiate": {"type": "boolean"},
-        "human_approval_required_for": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
-      }
-    },
-    "verification": {
-      "type": "object", "additionalProperties": false,
-      "required": ["receipt_schema_version", "receipt_url"],
-      "properties": {
-        "receipt_schema_version": {"type": "string", "minLength": 1},
-        "receipt_url": {"type": "string", "format": "uri", "pattern": "^https://"}
-      }
-    },
-    "change_control": {
-      "type": "object", "additionalProperties": false,
-      "required": ["version", "updated_at", "changelog_url"],
-      "properties": {
-        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
-        "updated_at": {"type": ["string", "null"], "format": "date-time"},
-        "changelog_url": {"type": ["string", "null"], "format": "uri"}
-      }
-    }
+    "venture": {"type": "object", "additionalProperties": false, "required": ["id", "name", "canonical_url"], "properties": {"id": {"type": "string", "minLength": 1}, "name": {"type": "string", "minLength": 1}, "canonical_url": {"type": "string", "format": "uri", "pattern": "^https://"}}},
+    "readiness": {"type": "object", "additionalProperties": false, "required": ["state", "allowed_states"], "properties": {"state": {"enum": ["browse", "qualify", "quote", "book", "buy", "apply", "subscribe", "refer", "escalate_to_human"]}, "allowed_states": {"type": "array", "uniqueItems": true, "minItems": 1, "items": {"enum": ["browse", "qualify", "quote", "book", "buy", "apply", "subscribe", "refer", "escalate_to_human"]}}}},
+    "discovery": {"type": "object", "additionalProperties": false, "required": ["manifest_url", "verification_receipt_url", "llms_txt_url"], "properties": {"manifest_url": {"type": "string", "format": "uri", "pattern": "^https://"}, "verification_receipt_url": {"type": "string", "format": "uri", "pattern": "^https://"}, "llms_txt_url": {"type": "string", "format": "uri", "pattern": "^https://"}}},
+    "offers": {"type": "array", "items": {"$ref": "#/$defs/offer"}},
+    "eligibility": {"type": "object", "additionalProperties": false, "required": ["geographies", "requirements", "exclusions"], "properties": {"geographies": {"type": "array", "items": {"type": "string"}}, "requirements": {"type": "array", "items": {"type": "string"}}, "exclusions": {"type": "array", "items": {"type": "string"}}}},
+    "pricing": {"type": "object", "additionalProperties": false, "required": ["currency", "model", "public", "amount", "requires_quote"], "properties": {"currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"}, "model": {"type": "string", "minLength": 1}, "public": {"type": "boolean"}, "amount": {"type": ["number", "null"], "minimum": 0}, "requires_quote": {"type": "boolean"}}},
+    "actions": {"type": "array", "items": {"$ref": "#/$defs/action"}},
+    "guardrails": {"type": "object", "additionalProperties": false, "required": ["agent_may_commit_spend", "agent_may_accept_legal_terms", "agent_may_negotiate", "human_approval_required_for"], "properties": {"agent_may_commit_spend": {"type": "boolean"}, "agent_may_accept_legal_terms": {"type": "boolean"}, "agent_may_negotiate": {"type": "boolean"}, "human_approval_required_for": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}},
+    "verification": {"type": "object", "additionalProperties": false, "required": ["receipt_schema_version", "receipt_url"], "properties": {"receipt_schema_version": {"type": "string", "minLength": 1}, "receipt_url": {"type": "string", "format": "uri", "pattern": "^https://"}}},
+    "change_control": {"type": "object", "additionalProperties": false, "required": ["version", "updated_at", "changelog_url"], "properties": {"version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}, "updated_at": {"type": ["string", "null"], "format": "date-time"}, "changelog_url": {"type": ["string", "null"], "format": "uri"}}}
   }
 }

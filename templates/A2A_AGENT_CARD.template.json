@@ -1,0 +1,30 @@
+{
+  "name": "[VENTURE_NAME]",
+  "description": "[ONE_SENTENCE_AGENT_READABLE_DESCRIPTION]",
+  "version": "1.0.0",
+  "protocolVersion": "1.0",
+  "url": "https://[DOMAIN]/a2a",
+  "preferredTransport": "JSONRPC",
+  "additionalInterfaces": [
+    {
+      "url": "https://[DOMAIN]/a2a",
+      "transport": "JSONRPC"
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "defaultInputModes": ["application/json", "text/plain"],
+  "defaultOutputModes": ["application/json", "text/plain"],
+  "skills": [
+    {
+      "id": "[STABLE_SKILL_ID]",
+      "name": "[SKILL_NAME]",
+      "description": "[DETERMINISTIC_DESCRIPTION_OF_WHAT_THE_AGENT_CAN_DO]",
+      "tags": ["[TAG]"],
+      "examples": ["[EXAMPLE_REQUEST]"]
+    }
+  ]
+}

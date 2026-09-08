@@ -8,6 +8,8 @@ on:
       - "templates/AGENT_VERIFICATION_RECEIPT.schema.json"
       - "templates/AGENT_NATIVE_STARTER_CONTRACT.schema.json"
       - "templates/AGENT_NATIVE_STARTER_CONTRACT.json"
+      - "templates/MCP_SERVER_CONTRACT.schema.json"
+      - "templates/MCP_SERVER_CONTRACT.template.json"
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
@@ -21,6 +23,8 @@ on:
       - "templates/AGENT_VERIFICATION_RECEIPT.schema.json"
       - "templates/AGENT_NATIVE_STARTER_CONTRACT.schema.json"
       - "templates/AGENT_NATIVE_STARTER_CONTRACT.json"
+      - "templates/MCP_SERVER_CONTRACT.schema.json"
+      - "templates/MCP_SERVER_CONTRACT.template.json"
       - "templates/agent.example.json"
       - "scripts/validate_agent_manifest.py"
       - "scripts/verify_agent_probes.py"
@@ -56,6 +60,17 @@ jobs:
           if contract['readiness']['state'] not in contract['readiness']['allowed_states']:
               raise ValueError('readiness.state must be present in readiness.allowed_states')
           print('Agent-native starter transaction contract valid')
+          PY
+      - name: Validate MCP 2026-07-28 server contract
+        run: |
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.load(open('templates/MCP_SERVER_CONTRACT.schema.json'))
+          contract = json.load(open('templates/MCP_SERVER_CONTRACT.template.json'))
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(contract)
+          print('MCP server contract valid')
           PY
       - name: Verify production agent capability probes
         run: python scripts/verify_agent_probes.py

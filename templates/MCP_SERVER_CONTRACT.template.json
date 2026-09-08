@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "protocol_version": "2026-07-28",
+  "endpoint": "https://example.com/mcp",
+  "transport": "streamable-http",
+  "discovery": {
+    "method": "server/discover",
+    "optional": true
+  },
+  "authorization": {
+    "required": false,
+    "scheme": "none",
+    "resource_metadata_url": null
+  },
+  "tools": [
+    {
+      "name": "venture.status",
+      "description": "Return the current venture state without mutation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": ["state"],
+        "properties": {"state": {"type": "string"}}
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "human_approval_required": false
+    }
+  ]
+}

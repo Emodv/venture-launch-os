@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vla.local/schemas/mcp-server-contract.schema.json",
+  "title": "VLA MCP Server Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "protocol_version", "endpoint", "transport", "discovery", "authorization", "tools"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "protocol_version": {"const": "2026-07-28"},
+    "endpoint": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "transport": {"const": "streamable-http"},
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "optional"],
+      "properties": {
+        "method": {"const": "server/discover"},
+        "optional": {"const": true}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "scheme"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "scheme": {"enum": ["none", "oauth2"]},
+        "resource_metadata_url": {"type": ["string", "null"], "format": "uri"}
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description", "inputSchema", "annotations"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9_.-]+$"},
+          "description": {"type": "string", "minLength": 1},
+          "inputSchema": {"type": "object"},
+          "outputSchema": {"type": "object"},
+          "annotations": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"],
+            "properties": {
+              "readOnlyHint": {"type": "boolean"},
+              "destructiveHint": {"type": "boolean"},
+              "idempotentHint": {"type": "boolean"},
+              "openWorldHint": {"type": "boolean"}
+            }
+          },
+          "human_approval_required": {"type": "boolean", "default": false}
+        }
+      }
+    }
+  }
+}
